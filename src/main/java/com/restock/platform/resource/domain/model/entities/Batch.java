@@ -1,40 +1,40 @@
 package com.restock.platform.resource.domain.model.entities;
+import jakarta.persistence.Column;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.Id;
+import lombok.Getter;
+import org.springframework.data.annotation.CreatedDate;
+
 import java.time.LocalDate;
 
 public class Batch {
-    private Integer id;             // Integer en lugar de int para soportar null
-    private int supplyId;
+
+    @Id
+    @Getter
+    @GeneratedValue(strategy = jakarta.persistence.GenerationType.IDENTITY)
+    private Long id;
+
+    @Getter
+    @Column(nullable = false, updatable = false)
+    private Long supplyId;
+
+    @Getter
     private int stock;
-    private LocalDate expirationDate;  // LocalDate soporta null por defecto
-    private int userId;
+
+    @Getter
+    @CreatedDate
+    private LocalDate expirationDate;
+
+    @Getter
+    @Column(nullable = false, updatable = false)
+    private Long userId;
 
     // Constructor
-    public Batch(Integer id, int supplyId, int stock, LocalDate expirationDate, int userId) {
+    public Batch(Long id, Long supplyId, int stock, LocalDate expirationDate, Long userId) {
         this.id = id;
         this.supplyId = supplyId;
         this.stock = stock;
         this.expirationDate = expirationDate;
         this.userId = userId;
-    }
-
-    // Getters
-    public Integer getId() {
-        return id;
-    }
-
-    public int getSupplyId() {
-        return supplyId;
-    }
-
-    public int getStock() {
-        return stock;
-    }
-
-    public LocalDate getExpirationDate() {
-        return expirationDate;
-    }
-
-    public int getUserId() {
-        return userId;
     }
 }
