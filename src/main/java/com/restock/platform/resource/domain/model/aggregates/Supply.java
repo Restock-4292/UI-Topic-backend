@@ -32,6 +32,10 @@ public class Supply extends AuditableAbstractAggregateRoot<Supply> {
 
     @Getter
     @Embedded
+    @AttributeOverrides({
+            @AttributeOverride(name = "name", column = @Column(name = "unit_name")),
+            @AttributeOverride(name = "abbreviation", column = @Column(name = "unit_abbreviation"))
+    })
     private UnitMeasurement unitMeasurement;
 
     @Getter
