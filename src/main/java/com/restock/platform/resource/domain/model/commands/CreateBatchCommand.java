@@ -5,7 +5,7 @@ import java.time.LocalDate;
 public record CreateBatchCommand(
         Long userId,
         Long supplyId,
-        int stock,
+        double stock,
         LocalDate expirationDate
 ) {
     public CreateBatchCommand {

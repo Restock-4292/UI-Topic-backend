@@ -9,6 +9,4 @@ import java.util.List;
 @Repository
 public interface SupplyRepository extends JpaRepository<Supply, Long> {
     List<Supply> findAllByUserId(Long userId);
-    boolean existsByNameAndUserId(String name, Long userId);
-    boolean existsByNameAndUserIdAndIdIsNot(String name, Long userId, Long id);
 }

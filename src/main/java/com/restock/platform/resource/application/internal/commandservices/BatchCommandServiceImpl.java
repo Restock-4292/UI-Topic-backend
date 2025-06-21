@@ -1,10 +1,7 @@
 package com.restock.platform.resource.application.internal.commandservices;
 
 import com.restock.platform.resource.domain.model.aggregates.Batch;
-import com.restock.platform.resource.domain.model.commands.CreateBatchCommand;
-import com.restock.platform.resource.domain.model.commands.DeleteBatchCommand;
-import com.restock.platform.resource.domain.model.commands.UpdateBatchStockCommand;
-import com.restock.platform.resource.domain.model.commands.UpdateBatchExpirationDateCommand;
+import com.restock.platform.resource.domain.model.commands.*;
 import com.restock.platform.resource.domain.services.BatchCommandService;
 import com.restock.platform.resource.infrastructure.persistence.jpa.repositories.BatchRepository;
 import com.restock.platform.resource.infrastructure.persistence.jpa.repositories.SupplyRepository;
@@ -47,32 +44,20 @@ public class BatchCommandServiceImpl implements BatchCommandService {
             throw new RuntimeException("Error deleting batch: " + e.getMessage(), e);
         }
     }
-
     @Override
-    public Optional<Batch> handle(UpdateBatchStockCommand command) {
+    public Optional<Batch> handle(UpdateBatchCommand command) {
         var batch = batchRepository.findById(command.batchId())
                 .orElseThrow(() -> new IllegalArgumentException("Batch not found with id: " + command.batchId()));
+
         try {
-            batch.updateStock(command.newStock());
+            batch.update(command.stock(), command.expirationDate());
             batchRepository.save(batch);
             return Optional.of(batch);
         } catch (Exception e) {
-            throw new RuntimeException("Error updating batch stock: " + e.getMessage(), e);
+            throw new RuntimeException("Error updating batch: " + e.getMessage(), e);
         }
     }
 
-    @Override
-    public Optional<Batch> handle(UpdateBatchExpirationDateCommand command) {
-        var batch = batchRepository.findById(command.batchId())
-                .orElseThrow(() -> new IllegalArgumentException("Batch not found with id: " + command.batchId()));
-        try {
-            batch.updateExpirationDate(command.newExpirationDate());
-            batchRepository.save(batch);
-            return Optional.of(batch);
-        } catch (Exception e) {
-            throw new RuntimeException("Error updating batch expiration date: " + e.getMessage(), e);
-        }
-    }
 
     private void verifyBatchExists(Long id) {
         if (!batchRepository.existsById(id)) {

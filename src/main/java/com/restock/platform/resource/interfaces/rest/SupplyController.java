@@ -1,6 +1,7 @@
 package com.restock.platform.resource.interfaces.rest;
 
 import com.restock.platform.resource.domain.model.commands.CreateSupplyCommand;
+import com.restock.platform.resource.domain.model.commands.DeleteSupplyCommand;
 import com.restock.platform.resource.domain.model.queries.GetAllSuppliesQuery;
 import com.restock.platform.resource.domain.model.queries.GetSupplyByIdQuery;
 import com.restock.platform.resource.domain.model.queries.GetSuppliesByUserIdQuery;
@@ -8,8 +9,10 @@ import com.restock.platform.resource.domain.services.SupplyCommandService;
 import com.restock.platform.resource.domain.services.SupplyQueryService;
 import com.restock.platform.resource.interfaces.rest.resources.CreateSupplyResource;
 import com.restock.platform.resource.interfaces.rest.resources.SupplyResource;
+import com.restock.platform.resource.interfaces.rest.resources.UpdateSupplyResource;
 import com.restock.platform.resource.interfaces.rest.transform.CreateSupplyCommandFromResourceAssembler;
 import com.restock.platform.resource.interfaces.rest.transform.SupplyResourceFromEntityAssembler;
+import com.restock.platform.resource.interfaces.rest.transform.UpdateSupplyCommandFromResourceAssembler;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -107,6 +110,28 @@ public class SupplyController {
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
+    /**
+     * Delete a supply by ID
+     *
+     * @param id The ID of the supply to delete
+     * @return 204 No Content if deleted successfully
+     */
+    @DeleteMapping("/{id}")
+    @Operation(summary = "Delete a supply", description = "Delete a supply by its ID")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "204", description = "Supply deleted successfully"),
+            @ApiResponse(responseCode = "404", description = "Supply not found")
+    })
+    public ResponseEntity<Void> deleteSupplyById(@PathVariable Long id) {
+        try {
+            supplyCommandService.handle(new DeleteSupplyCommand(id));
+            return ResponseEntity.noContent().build();
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.notFound().build();
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().build();
+        }
+    }
 
     /**
      * Get supplies by user ID
@@ -125,5 +150,35 @@ public class SupplyController {
                 .map(SupplyResourceFromEntityAssembler::toResourceFromEntity)
                 .toList();
         return ResponseEntity.ok(resources);
+    }
+
+    /**
+     * Update a supply by ID
+     *
+     * @param id The ID of the supply
+     * @param resource The updated values
+     * @return The updated {@link SupplyResource}
+     */
+    @PutMapping("/{id}")
+    @Operation(summary = "Update a supply", description = "Update an existing supply by its ID")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Supply updated successfully"),
+            @ApiResponse(responseCode = "400", description = "Invalid input"),
+            @ApiResponse(responseCode = "404", description = "Supply not found")
+    })
+    public ResponseEntity<SupplyResource> updateSupply(
+            @PathVariable Long id,
+            @RequestBody UpdateSupplyResource resource) {
+
+        var command = UpdateSupplyCommandFromResourceAssembler.toCommandFromResource(id, resource);
+        var updatedSupply  = supplyCommandService.handle(command);
+
+        if (updatedSupply.isEmpty()) return ResponseEntity.notFound().build();
+
+        var result = supplyQueryService.handle(new GetSupplyByIdQuery(id));
+        if (result.isEmpty()) return ResponseEntity.notFound().build();
+
+        var resourceResponse = SupplyResourceFromEntityAssembler.toResourceFromEntity(result.get());
+        return ResponseEntity.ok(resourceResponse);
     }
 }
