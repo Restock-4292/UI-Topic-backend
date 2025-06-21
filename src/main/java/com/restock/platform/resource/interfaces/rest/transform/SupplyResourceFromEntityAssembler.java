@@ -8,16 +8,13 @@ public class SupplyResourceFromEntityAssembler {
     public static SupplyResource toResourceFromEntity(Supply supply) {
         return new SupplyResource(
                 supply.getId(),
-                supply.getName(),
+                supply.getReferenceSupplyId(),
                 supply.getDescription(),
-                supply.isPerishable(),
-                supply.getMinStock(),
-                supply.getMaxStock(),
-                supply.getPrice(),
-                supply.getUserId(),
-                supply.getUnitMeasurement().getName(),
-                supply.getUnitMeasurement().getAbbreviation(),
-                supply.getCategory().getId()
+                supply.getStockRange().minStock(),
+                supply.getStockRange().maxStock(),
+                supply.getPrice().amount(),
+                supply.getPrice().currency().getCurrencyCode(),
+                supply.getUserId()
         );
     }
 }

@@ -25,7 +25,7 @@ public class Batch extends AuditableAbstractAggregateRoot<Batch> {
     private Supply supply;
 
     @Getter
-    private int stock;
+    private Double stock;
 
     @Getter
     private LocalDate expirationDate;
@@ -42,7 +42,7 @@ public class Batch extends AuditableAbstractAggregateRoot<Batch> {
      * @param stock The amount of stock in the batch.
      * @param expirationDate The expiration date of the batch.
      */
-    public Batch(Long userId, Supply supply, int stock, LocalDate expirationDate) {
+    public Batch(Long userId, Supply supply,  Double stock, LocalDate expirationDate) {
         this.userId = userId;
         this.supply = supply;
         this.stock = stock;
@@ -58,14 +58,9 @@ public class Batch extends AuditableAbstractAggregateRoot<Batch> {
     public Batch(CreateBatchCommand command, Supply supply) {
         this(command.userId(), supply, command.stock(), command.expirationDate());
     }
-
-    public Batch updateStock(int newStock) {
-        this.stock = newStock;
-        return this;
-    }
-
-    public Batch updateExpirationDate(LocalDate newExpirationDate) {
-        this.expirationDate = newExpirationDate;
+    public Batch update(Double newStock, LocalDate newExpirationDate) {
+        if (newStock != null) this.stock = newStock;
+        if (newExpirationDate != null) this.expirationDate = newExpirationDate;
         return this;
     }
 }

@@ -1,14 +1,12 @@
 package com.restock.platform.resource.interfaces.rest.resources;
 
-public record CreateSupplyResource(
-        Long referenceSupplyId,
+public record UpdateSupplyResource(
         String description,
         int minStock,
         int maxStock,
-        double price,
-        Long userId
+        double price
 ) {
-    public CreateSupplyResource {
+    public UpdateSupplyResource {
         if (description == null || description.isBlank())
             throw new IllegalArgumentException("Description is required");
         if (minStock < 0)
@@ -17,7 +15,5 @@ public record CreateSupplyResource(
             throw new IllegalArgumentException("Max stock must be greater than or equal to min stock");
         if (price < 0)
             throw new IllegalArgumentException("Price must be non-negative");
-        if (userId == null)
-            throw new IllegalArgumentException("User ID is required");
     }
 }

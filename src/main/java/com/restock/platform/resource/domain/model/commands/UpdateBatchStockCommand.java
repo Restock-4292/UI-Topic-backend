@@ -2,7 +2,7 @@ package com.restock.platform.resource.domain.model.commands;
 
 public record UpdateBatchStockCommand(
         Long batchId,
-        int newStock
+        double newStock
 ) {
     public UpdateBatchStockCommand {
         if (batchId == null || batchId <= 0)

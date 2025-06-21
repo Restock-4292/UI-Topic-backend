@@ -1,35 +1,34 @@
 package com.restock.platform.resource.domain.model.commands;
 
+import com.restock.platform.resource.domain.model.valueobjects.Price;
+import com.restock.platform.resource.domain.model.valueobjects.StockRange;
+
 public record CreateSupplyCommand(
-        String name,
-        String description,
-        boolean perishable,
-        int minStock,
-        int maxStock,
-        double price,
-        Long userId,
-        String unitMeasurementName,
-        String unitMeasurementAbbreviation,
-        Long categoryId
+        Long referenceSupplyId,     // ID de ReferenceSupply
+        StockRange stockRange,       // Value Object con min/max stock
+        Price price,                 // Value Object con amount y currency
+        String description,          // Descripción personalizada
+        Long userId                  // ID del usuario
 ) {
     public CreateSupplyCommand {
-        if (name == null || name.isBlank())
-            throw new IllegalArgumentException("Name cannot be null or blank");
+        // Validación de referenceSupplyId
+        if (referenceSupplyId == null || referenceSupplyId <= 0)
+            throw new IllegalArgumentException("Reference Supply ID must be a positive number");
+
+        // Validación de stockRange
+        if (stockRange == null)
+            throw new IllegalArgumentException("Stock range cannot be null");
+
+        // Validación de price
+        if (price == null)
+            throw new IllegalArgumentException("Price cannot be null");
+
+        // Validación de descripción
         if (description == null || description.isBlank())
             throw new IllegalArgumentException("Description cannot be null or blank");
-        if (minStock < 0)
-            throw new IllegalArgumentException("Minimum stock cannot be negative");
-        if (maxStock < minStock)
-            throw new IllegalArgumentException("Maximum stock must be greater than or equal to minimum stock");
-        if (price < 0)
-            throw new IllegalArgumentException("Price cannot be negative");
+
+        // Validación de userId
         if (userId == null || userId <= 0)
             throw new IllegalArgumentException("User ID must be a positive number");
-        if (unitMeasurementName == null || unitMeasurementName.isBlank())
-            throw new IllegalArgumentException("Unit name is required");
-        if (unitMeasurementAbbreviation == null || unitMeasurementAbbreviation.isBlank())
-            throw new IllegalArgumentException("Unit abbreviation is required");
-        if (categoryId == null || categoryId <= 0)
-            throw new IllegalArgumentException("Category ID must be a positive number");
     }
 }

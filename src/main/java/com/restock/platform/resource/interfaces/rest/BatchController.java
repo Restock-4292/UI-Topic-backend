@@ -1,5 +1,6 @@
 package com.restock.platform.resource.interfaces.rest;
 
+import com.restock.platform.resource.domain.model.commands.DeleteBatchCommand;
 import com.restock.platform.resource.domain.model.queries.GetAllBatchesQuery;
 import com.restock.platform.resource.domain.model.queries.GetBatchByIdQuery;
 import com.restock.platform.resource.domain.model.queries.GetBatchesByUserIdQuery;
@@ -9,6 +10,9 @@ import com.restock.platform.resource.interfaces.rest.resources.BatchResource;
 import com.restock.platform.resource.interfaces.rest.resources.CreateBatchResource;
 import com.restock.platform.resource.interfaces.rest.transform.BatchResourceFromEntityAssembler;
 import com.restock.platform.resource.interfaces.rest.transform.CreateBatchCommandFromResourceAssembler;
+import com.restock.platform.resource.domain.model.commands.UpdateBatchCommand;
+import com.restock.platform.resource.interfaces.rest.resources.UpdateBatchResource;
+import com.restock.platform.resource.interfaces.rest.transform.UpdateBatchCommandFromResourceAssembler;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -123,5 +127,56 @@ public class BatchController {
                 .map(BatchResourceFromEntityAssembler::toResourceFromEntity)
                 .toList();
         return ResponseEntity.ok(resources);
+    }
+    /**
+     * Update a batch by ID
+     *
+     * @param id The ID of the batch
+     * @param resource The updated values
+     * @return The updated {@link BatchResource}
+     */
+    @PutMapping("/{id}")
+    @Operation(summary = "Update a batch", description = "Update an existing batch by its ID")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Batch updated successfully"),
+            @ApiResponse(responseCode = "400", description = "Invalid input"),
+            @ApiResponse(responseCode = "404", description = "Batch not found")
+    })
+    public ResponseEntity<BatchResource> updateBatch(
+            @PathVariable Long id,
+            @RequestBody UpdateBatchResource resource) {
+
+        var command = UpdateBatchCommandFromResourceAssembler.toCommandFromResource(id, resource);
+        var updatedBatch = batchCommandService.handle(command);
+
+        if (updatedBatch.isEmpty()) return ResponseEntity.notFound().build();
+
+        var result = batchQueryService.handle(new GetBatchByIdQuery(id));
+        if (result.isEmpty()) return ResponseEntity.notFound().build();
+
+        var resourceResponse = BatchResourceFromEntityAssembler.toResourceFromEntity(result.get());
+        return ResponseEntity.ok(resourceResponse);
+    }
+    /**
+     * Delete a batch by ID
+     *
+     * @param id The ID of the batch to delete
+     * @return 204 No Content if deleted successfully
+     */
+    @DeleteMapping("/{id}")
+    @Operation(summary = "Delete a batch", description = "Delete a batch by its ID")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "204", description = "Batch deleted successfully"),
+            @ApiResponse(responseCode = "404", description = "Batch not found")
+    })
+    public ResponseEntity<Void> deleteBatch(@PathVariable Long id) {
+        try {
+            batchCommandService.handle(new DeleteBatchCommand(id));
+            return ResponseEntity.noContent().build();
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.notFound().build();
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().build();
+        }
     }
 }

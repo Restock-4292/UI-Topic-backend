@@ -1,8 +1,8 @@
 package com.restock.platform.resource.domain.model.aggregates;
 
-import com.restock.platform.resource.domain.model.entities.Category;
+import com.restock.platform.resource.domain.model.valueobjects.StockRange;
+import com.restock.platform.resource.domain.model.valueobjects.Price;
 import com.restock.platform.shared.domain.model.aggregates.AuditableAbstractAggregateRoot;
-import com.restock.platform.resource.domain.model.valueobjects.UnitMeasurement;
 import jakarta.persistence.*;
 import lombok.Getter;
 
@@ -10,66 +10,43 @@ import lombok.Getter;
 public class Supply extends AuditableAbstractAggregateRoot<Supply> {
 
     @Getter
-    private String name;
+    private Long referenceSupplyId;
+
+    @Getter
+    @Embedded
+    @AttributeOverrides({
+            @AttributeOverride(name = "min", column = @Column(name = "stock_min")),
+            @AttributeOverride(name = "max", column = @Column(name = "stock_max"))
+    })
+    private StockRange stockRange;
+
+    @Getter
+    @Embedded
+    @AttributeOverride(name = "amount", column = @Column(name = "price_amount"))
+    private Price price;
 
     @Getter
     private String description;
 
     @Getter
-    private boolean perishable;
-
-    @Getter
-    private int minStock;
-
-    @Getter
-    private int maxStock;
-
-    @Getter
-    private double price;
-
-    @Getter
     private Long userId;
 
-    @Getter
-    @Embedded
-    @AttributeOverrides({
-            @AttributeOverride(name = "name", column = @Column(name = "unit_name")),
-            @AttributeOverride(name = "abbreviation", column = @Column(name = "unit_abbreviation"))
-    })
-    private UnitMeasurement unitMeasurement;
-
-    @Getter
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "category_id")
-    private Category category;
-
     protected Supply() {
-        // For JPA
+        // Para JPA
     }
 
-    public Supply(String name, String description, boolean perishable, int minStock, int maxStock,
-                  double price, Long userId, UnitMeasurement unitMeasurement, Category category) {
-        this.name = name;
-        this.description = description;
-        this.perishable = perishable;
-        this.minStock = minStock;
-        this.maxStock = maxStock;
+    public Supply(Long referenceSupplyId, StockRange stockRange, Price price, String description, Long userId) {
+        this.referenceSupplyId = referenceSupplyId;
+        this.stockRange = stockRange;
         this.price = price;
+        this.description = description;
         this.userId = userId;
-        this.unitMeasurement = unitMeasurement;
-        this.category = category;
     }
 
-    public Supply update(String name, String description, boolean perishable, int minStock, int maxStock,
-                         double price, UnitMeasurement unitMeasurement, Category category) {
-        this.name = name;
-        this.description = description;
-        this.perishable = perishable;
-        this.minStock = minStock;
-        this.maxStock = maxStock;
+    public Supply update(StockRange stockRange, Price price, String description) {
+        this.stockRange = stockRange;
         this.price = price;
-        this.unitMeasurement = unitMeasurement;
-        this.category = category;
+        this.description = description;
         return this;
     }
 }
