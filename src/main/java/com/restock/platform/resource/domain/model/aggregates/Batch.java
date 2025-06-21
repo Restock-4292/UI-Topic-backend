@@ -25,9 +25,12 @@ public class Batch extends AuditableAbstractAggregateRoot<Batch> {
     private Supply supply;
 
     @Getter
+    @Column(columnDefinition = "FLOAT")
     private Double stock;
 
+
     @Getter
+    @Column(columnDefinition = "DATE")
     private LocalDate expirationDate;
 
     protected Batch() {
