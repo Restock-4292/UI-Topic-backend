@@ -11,6 +11,7 @@ import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.List;
 import java.util.Map;
 import java.io.File;
@@ -34,9 +35,16 @@ public class ReferenceSupplyInitializer {
     @PostConstruct
     public void initReferenceSupplies() {
         try {
-            File file = Paths.get("src/main/java/com/restock/platform/resource/infrastructure/external/jsondata/files/reference-supplies.json").toFile();
+            InputStream inputStream = getClass()
+                    .getClassLoader()
+                    .getResourceAsStream("reference/jsondata/reference-supplies.json");
 
-            List<Map<String, Object>> supplies = objectMapper.readValue(file, new TypeReference<>() {});
+            if (inputStream == null) {
+                throw new RuntimeException("reference-supplies.json not found in classpath");
+            }
+
+            List<Map<String, Object>> supplies = objectMapper.readValue(inputStream, new TypeReference<>() {});
+
             supplies.forEach(map -> {
                 String name = (String) map.get("name");
                 if (!referenceSupplyJpaRepository.existsByName(name)) {
