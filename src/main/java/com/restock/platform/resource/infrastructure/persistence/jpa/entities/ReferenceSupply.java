@@ -17,12 +17,15 @@ public class ReferenceSupply {
     private boolean perishable;
     private String unitName;
     private String unitAbbreviation;
-    private String category;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "category_id")
+    private ReferenceCategory category;
 
     protected ReferenceSupply() {} // JPA
 
     public ReferenceSupply(String name, String description, boolean perishable,
-                           String unitName, String unitAbbreviation, String category) {
+                           String unitName, String unitAbbreviation, ReferenceCategory category) {
         this.name = name;
         this.description = description;
         this.perishable = perishable;

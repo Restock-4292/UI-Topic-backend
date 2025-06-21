@@ -13,7 +13,7 @@ public class ReferenceSupplyResourceFromEntityAssembler {
                 entity.isPerishable(),
                 entity.getUnitName(),
                 entity.getUnitAbbreviation(),
-                entity.getCategory()
+                entity.getCategory() != null ? entity.getCategory().getName() : null
         );
     }
 }
