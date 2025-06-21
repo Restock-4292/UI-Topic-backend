@@ -2,7 +2,9 @@ package com.restock.platform.resource.application.init;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.restock.platform.resource.infrastructure.persistence.jpa.entities.ReferenceCategory;
 import com.restock.platform.resource.infrastructure.persistence.jpa.entities.ReferenceSupply;
+import com.restock.platform.resource.infrastructure.persistence.jpa.repositories.ReferenceCategoryJpaRepository;
 import com.restock.platform.resource.infrastructure.persistence.jpa.repositories.ReferenceSupplyJpaRepository;
 import jakarta.annotation.PostConstruct;
 import org.springframework.core.io.ClassPathResource;
@@ -13,15 +15,20 @@ import java.util.List;
 import java.util.Map;
 import java.io.File;
 import java.nio.file.Paths;
+
 @Component
 public class ReferenceSupplyInitializer {
 
     private final ObjectMapper objectMapper;
     private final ReferenceSupplyJpaRepository referenceSupplyJpaRepository;
+    private final ReferenceCategoryJpaRepository referenceCategoryJpaRepository;
 
-    public ReferenceSupplyInitializer(ObjectMapper objectMapper, ReferenceSupplyJpaRepository referenceSupplyJpaRepository) {
+    public ReferenceSupplyInitializer(ObjectMapper objectMapper,
+                                      ReferenceSupplyJpaRepository referenceSupplyJpaRepository,
+                                      ReferenceCategoryJpaRepository referenceCategoryJpaRepository) {
         this.objectMapper = objectMapper;
         this.referenceSupplyJpaRepository = referenceSupplyJpaRepository;
+        this.referenceCategoryJpaRepository = referenceCategoryJpaRepository;
     }
 
     @PostConstruct
@@ -33,14 +40,20 @@ public class ReferenceSupplyInitializer {
             supplies.forEach(map -> {
                 String name = (String) map.get("name");
                 if (!referenceSupplyJpaRepository.existsByName(name)) {
+
+                    String categoryName = (String) map.get("category");
+                    ReferenceCategory category = referenceCategoryJpaRepository.findByName(categoryName)
+                            .orElseGet(() -> referenceCategoryJpaRepository.save(new ReferenceCategory(categoryName)));
+
                     ReferenceSupply supply = new ReferenceSupply(
                             name,
                             (String) map.get("description"),
                             (Boolean) map.get("perishable"),
                             (String) map.get("unitName"),
                             (String) map.get("unitAbbreviation"),
-                            (String) map.get("category")
+                            category
                     );
+
                     referenceSupplyJpaRepository.save(supply);
                 }
             });
