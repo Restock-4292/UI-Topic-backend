@@ -9,6 +9,14 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.util.Date;
 
+/**
+ * Abstract class for auditable aggregate roots.
+ * It extends AbstractAggregateRoot and is annotated with JPA auditing support.
+ * @summary
+ * This class serves as a base for aggregate roots that require auditing capabilities.
+ *
+ * @param <T> the type of the aggregate root
+ */
 @Getter
 @EntityListeners(AuditingEntityListener.class)
 @MappedSuperclass
