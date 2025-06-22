@@ -23,8 +23,12 @@ public class RecipeSupply {
 
     protected RecipeSupply() {}
 
-    public RecipeSupply(RecipeId recipeId, CatalogSupplyId supplyId, RecipeSupplyQuantity supplyQuantity) {
+    public RecipeSupply(RecipeId recipeId, CatalogSupplyId supplyId, RecipeSupplyQuantity quantity) {
         this.id = new RecipeSupplyId(recipeId, supplyId);
+        this.supplyQuantity = quantity;
+    }
+
+    public void updateQuantity(RecipeSupplyQuantity supplyQuantity) {
         this.supplyQuantity = supplyQuantity;
     }
 }
