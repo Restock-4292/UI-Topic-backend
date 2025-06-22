@@ -1,19 +1,17 @@
 package com.restock.platform.planning.domain.model.aggregates;
 
-import com.restock.platform.planning.domain.model.valueobjects.RecipeId;
-import com.restock.platform.planning.domain.model.valueobjects.RecipeImageURL;
-import com.restock.platform.planning.domain.model.valueobjects.RecipePrice;
+import com.restock.platform.planning.domain.model.entities.RecipeSupply;
+import com.restock.platform.planning.domain.model.valueobjects.*;
 import com.restock.platform.shared.domain.model.aggregates.AuditableAbstractAggregateRoot;
 import jakarta.persistence.*;
+import lombok.Getter;
 
 import java.util.ArrayList;
+import java.util.List;
 
+@Getter
 @Entity
 public class Recipe extends AuditableAbstractAggregateRoot<Recipe> {
-
-    @Embedded
-    @Column(name = "recipe_id")
-    private RecipeId id;
 
     private String name;
     private String description;
@@ -31,8 +29,7 @@ public class Recipe extends AuditableAbstractAggregateRoot<Recipe> {
 
     protected Recipe() {}
 
-    private Recipe(RecipeId id, String name, String description, RecipeImageURL imageUrl, RecipePrice totalPrice, Integer userId) {
-        this.id = id;
+    public Recipe(String name, String description, RecipeImageURL imageUrl, RecipePrice totalPrice, Integer userId) {
         this.name = name;
         this.description = description;
         this.imageUrl = imageUrl;
@@ -40,11 +37,15 @@ public class Recipe extends AuditableAbstractAggregateRoot<Recipe> {
         this.userId = userId;
     }
 
-    public void addSupply(RecipeSupply supply) {
-        this.supplies.add(supply);
+    public RecipeId getRecipeId() {
+        return new RecipeId(super.getId());
     }
 
-    public void removeAllSupplies() {
-        this.supplies.clear();
+    public void addSupply(CatalogSupplyId supplyId, RecipeSupplyQuantity quantity) {
+        var recipeSupply = new RecipeSupply(getRecipeId(), supplyId, quantity);
+        this.supplies.add(recipeSupply);
     }
-}
+
+    public void clearSupplies() {
+        this.supplies.clear();
+    }}
