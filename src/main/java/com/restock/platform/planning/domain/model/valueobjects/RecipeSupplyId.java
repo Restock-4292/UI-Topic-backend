@@ -14,7 +14,7 @@ public class RecipeSupplyId implements Serializable {
     private Long recipeId;
 
     @Column(name = "supply_id")
-    private Long supplyId;
+    private Integer supplyId;
 
     protected RecipeSupplyId() {}
 
