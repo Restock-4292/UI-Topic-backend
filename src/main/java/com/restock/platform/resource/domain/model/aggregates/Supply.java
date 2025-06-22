@@ -15,15 +15,20 @@ public class Supply extends AuditableAbstractAggregateRoot<Supply> {
     @Getter
     @Embedded
     @AttributeOverrides({
-            @AttributeOverride(name = "min", column = @Column(name = "stock_min")),
-            @AttributeOverride(name = "max", column = @Column(name = "stock_max"))
+            @AttributeOverride(name = "min", column = @Column(name = "stock_min", columnDefinition = "FLOAT")),
+            @AttributeOverride(name = "max", column = @Column(name = "stock_max", columnDefinition = "FLOAT"))
     })
     private StockRange stockRange;
 
+
     @Getter
     @Embedded
-    @AttributeOverride(name = "amount", column = @Column(name = "price_amount"))
+    @AttributeOverrides({
+            @AttributeOverride(name = "amount", column = @Column(name = "price_amount", columnDefinition = "FLOAT")),
+            @AttributeOverride(name = "currency", column = @Column(name = "currency", length = 3))
+    })
     private Price price;
+
 
     @Getter
     private String description;
