@@ -5,9 +5,9 @@ import jakarta.persistence.Embeddable;
 import lombok.Getter;
 
 @Embeddable
-public record CatalogSupplyId(@Column(name = "supply_id") Long value) {
+public record CatalogSupplyId(@Column(name = "supply_id") int value) {
     public CatalogSupplyId {
-        if (value == null || value <= 0)
+        if (value <= 0)
             throw new IllegalArgumentException("Supply ID must be a positive number.");
     }
 }

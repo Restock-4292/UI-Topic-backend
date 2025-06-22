@@ -46,6 +46,26 @@ public class Recipe extends AuditableAbstractAggregateRoot<Recipe> {
         this.supplies.add(recipeSupply);
     }
 
+    public Recipe update(String name, String description, RecipeImageURL imageUrl, RecipePrice totalPrice) {
+        if (name != null && !name.isBlank()) this.name = name;
+        if (description != null && !description.isBlank()) this.description = description;
+        if (imageUrl != null) this.imageUrl = imageUrl;
+        if (totalPrice != null) this.totalPrice = totalPrice;
+        return this;
+    }
+
+    public void updateSupply(CatalogSupplyId supplyId, RecipeSupplyQuantity quantity) {
+        this.supplies.stream()
+                .filter(s -> s.getId().getSupplyId().equals(supplyId.value()))
+                .findFirst()
+                .ifPresent(s -> s.updateQuantity(quantity));
+    }
+
+    public void removeSupply(CatalogSupplyId supplyId) {
+        this.supplies.removeIf(s -> s.getId().getSupplyId().equals(supplyId.value()));
+    }
+
     public void clearSupplies() {
         this.supplies.clear();
-    }}
+    }
+}

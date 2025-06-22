@@ -8,7 +8,7 @@ import java.time.LocalDate;
 public record CreateBatchResource(
         Long userId,
         Long supplyId,
-        int stock,
+        Integer stock,
         LocalDate expirationDate
 ) {
     public CreateBatchResource {
