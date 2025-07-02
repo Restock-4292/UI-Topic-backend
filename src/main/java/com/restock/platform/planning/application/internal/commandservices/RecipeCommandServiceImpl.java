@@ -29,12 +29,6 @@ public class RecipeCommandServiceImpl implements RecipeCommandService {
                 command.userId()
         );
 
-        command.supplies().forEach(supply -> {
-            var supplyId = new CatalogSupplyId(supply.supplyId());
-            var quantity = new RecipeSupplyQuantity(supply.quantity());
-            recipe.addSupply(supplyId, quantity);
-        });
-
         try {
             recipeRepository.save(recipe);
         } catch (Exception e) {
@@ -74,7 +68,7 @@ public class RecipeCommandServiceImpl implements RecipeCommandService {
         var recipe = recipeRepository.findById(command.recipeId())
                 .orElseThrow(() -> new IllegalArgumentException("Recipe not found with id: " + command.recipeId()));
 
-        recipe.addSupply(new CatalogSupplyId(command.supplyId()), new RecipeSupplyQuantity(command.quantity()));
+        recipe.addSupply(new RecipeId(command.recipeId()), new CatalogSupplyId(command.supplyId()), new RecipeSupplyQuantity(command.quantity()));
         recipeRepository.save(recipe);
         return Optional.of(recipe);
     }

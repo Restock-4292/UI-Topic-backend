@@ -7,8 +7,8 @@ import org.springframework.context.annotation.Configuration;
 
 @Configuration
 public class JacksonConfig {
-    @Bean
+    /*@Bean
     public Jackson2ObjectMapperBuilderCustomizer customizer() {
         return builder -> builder.propertyNamingStrategy(PropertyNamingStrategies.SNAKE_CASE);
-    }
+    }*/
 }

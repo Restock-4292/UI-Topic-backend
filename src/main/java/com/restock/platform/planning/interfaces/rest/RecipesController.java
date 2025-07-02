@@ -117,23 +117,24 @@ public class RecipesController {
     }
 
     @PostMapping("/{id}/supplies")
-    @Operation(summary = "Add supply to recipe")
+    @Operation(summary = "Add supplies to recipe")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Supply added to recipe successfully"),
+            @ApiResponse(responseCode = "201", description = "Supplies added successfully"),
             @ApiResponse(responseCode = "404", description = "Recipe not found"),
             @ApiResponse(responseCode = "400", description = "Invalid input", content = @Content)
     })
-    public ResponseEntity<RecipeResource> addSupply(
+    public ResponseEntity<Void> addSuppliesToRecipe(
             @PathVariable Long id,
-            @RequestBody AddRecipeSupplyResource resource) {
-        var command = AddRecipeSupplyCommandFromResourceAssembler.toCommandFromResource(id, resource);
-        var updated = recipeCommandService.handle(command);
-        if (updated.isEmpty()) return ResponseEntity.notFound().build();
-        var recipe = recipeQueryService.handle(new GetRecipeByIdQuery(id));
-        if (recipe.isEmpty()) return ResponseEntity.notFound().build();
-        var resourceResponse = RecipeResourceFromEntityAssembler.toResourceFromEntity(recipe.get());
-        return ResponseEntity.ok(resourceResponse);
+            @RequestBody List<AddRecipeSupplyResource> supplies) {
+
+        supplies.forEach(resource -> {
+            var command = AddRecipeSupplyCommandFromResourceAssembler.toCommandFromResource(id, resource);
+            recipeCommandService.handle(command);
+        });
+
+        return ResponseEntity.status(HttpStatus.CREATED).build();
     }
+
 
     @GetMapping("/{id}/supplies")
     @Operation(summary = "Get recipe supplies")
