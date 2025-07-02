@@ -18,8 +18,7 @@ public class CreateRecipeCommandFromResourceAssembler {
                 resource.description(),
                 resource.imageUrl(),
                 resource.totalPrice(),
-                resource.userId(),
-                resource.getSuppliesOrEmpty()
+                resource.userId()
         );
     }
 }
