@@ -1,34 +1,16 @@
 package com.restock.platform.resource.domain.model.commands;
 
-import com.restock.platform.resource.domain.model.valueobjects.Price;
-import com.restock.platform.resource.domain.model.valueobjects.StockRange;
+import com.restock.platform.resource.domain.model.valueobjects.UnitMeasurement;
 
+/*
+        "name": "Pollo Entero",
+        "description": "Pollo fresco sin vísceras",
+        "perishable": true,
+        "unitName": "Unidad",
+        "unitAbbreviation": "u",
+        "category": "Carnes"
+ */
 public record CreateSupplyCommand(
-        Long referenceSupplyId,     // ID de ReferenceSupply
-        StockRange stockRange,       // Value Object con min/max stock
-        Price price,                 // Value Object con amount y currency
-        String description,          // Descripción personalizada
-        Long userId                  // ID del usuario
+        String name, String description, Boolean perishable, UnitMeasurement unitMeasurement, String category
 ) {
-    public CreateSupplyCommand {
-        // Validación de referenceSupplyId
-        if (referenceSupplyId == null || referenceSupplyId <= 0)
-            throw new IllegalArgumentException("Reference Supply ID must be a positive number");
-
-        // Validación de stockRange
-        if (stockRange == null)
-            throw new IllegalArgumentException("Stock range cannot be null");
-
-        // Validación de price
-        if (price == null)
-            throw new IllegalArgumentException("Price cannot be null");
-
-        // Validación de descripción
-        if (description == null || description.isBlank())
-            throw new IllegalArgumentException("Description cannot be null or blank");
-
-        // Validación de userId
-        if (userId == null || userId <= 0)
-            throw new IllegalArgumentException("User ID must be a positive number");
-    }
 }

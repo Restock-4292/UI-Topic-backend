@@ -1,14 +1,17 @@
 package com.restock.platform.resource.interfaces.rest.resources;
 
-public record CreateSupplyResource(
-        Long referenceSupplyId,
+public record CreateCustomSupplyResource(
+        Long supplyId,
         String description,
         int minStock,
         int maxStock,
         double price,
         Long userId
 ) {
-    public CreateSupplyResource {
+    public CreateCustomSupplyResource {
+        if(supplyId == null) {
+            throw new IllegalArgumentException("supplyId cannot be null");
+        }
         if (description == null || description.isBlank())
             throw new IllegalArgumentException("Description is required");
         if (minStock < 0)

@@ -1,8 +1,8 @@
 package com.restock.platform.resource.interfaces.rest.resources;
 
-public record SupplyResource(
+public record CustomSupplyResource(
         Long id,
-        Long referenceSupplyId,
+        Long supplyId,
         String description,
         int minStock,
         int maxStock,

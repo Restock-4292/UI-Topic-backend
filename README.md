@@ -81,7 +81,7 @@ This context focuses on the creation and planning of services offered on the pla
 - Maintain a catalog of suppliers and available products.
 - Allow administrators to create and manage purchase orders to suppliers.
 
-This context supports efficient management of physical assets and supply chain operations. It allows restaurant administrators to keep inventory up to date, connect with suppliers, and manage restocking through automated or manual orders.
+This context supports efficient management of physical assets and customSupply chain operations. It allows restaurant administrators to keep inventory up to date, connect with suppliers, and manage restocking through automated or manual orders.
 
 ---
 

@@ -9,7 +9,7 @@ public class BatchResourceFromEntityAssembler {
         return new BatchResource(
                 batch.getId(),
                 batch.getUserId(),
-                batch.getSupply().getId(),
+                batch.getCustomSupply().getId(),
                 batch.getStock(),
                 batch.getExpirationDate()
         );
