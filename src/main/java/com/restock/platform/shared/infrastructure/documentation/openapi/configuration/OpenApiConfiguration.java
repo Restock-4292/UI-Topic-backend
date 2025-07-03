@@ -1,5 +1,6 @@
 package com.restock.platform.shared.infrastructure.documentation.openapi.configuration;
 
+import io.swagger.v3.oas.models.servers.Server;
 import io.swagger.v3.oas.models.Components;
 import io.swagger.v3.oas.models.ExternalDocumentation;
 import io.swagger.v3.oas.models.OpenAPI;
@@ -13,6 +14,13 @@ import org.springframework.context.annotation.Configuration;
 
 @Configuration
 public class OpenApiConfiguration {
+    @Bean
+    public OpenAPI restockPlatformOpenApi() {
+        return new OpenAPI()
+                .addServersItem(new Server().url("http://localhost:8080"));
+    }
+}
+
     @Value("${spring.application.name}")
     String applicationName;
 
@@ -33,8 +41,8 @@ public class OpenApiConfiguration {
                         .license(new License().name("Apache 2.0")
                                 .url("https://springdoc.org")))
                 .externalDocs(new ExternalDocumentation()
-                        .description("ACME Learning Platform wiki Documentation")
-                        .url("https://acme-learning-platform.wiki.github.io/docs"));
+                        .description("Restock Platform wiki Documentation")
+                        .url("https://restock.platform.github.io/docs"));
 
         // Add a security scheme
 

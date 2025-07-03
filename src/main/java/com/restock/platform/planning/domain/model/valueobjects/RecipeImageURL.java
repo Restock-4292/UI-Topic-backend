@@ -3,11 +3,11 @@ package com.restock.platform.planning.domain.model.valueobjects;
 import jakarta.persistence.Embeddable;
 
 @Embeddable
-public record RecipeImageURL(String imageURL)
+public record RecipeImageURL(String imageUrl)
 {
     public RecipeImageURL {
-        if (imageURL == null || imageURL.isBlank()) {
-            throw new IllegalArgumentException("Image URL must not be null or blank");
+        if (imageUrl == null || imageUrl.isBlank()) {
+            throw new IllegalArgumentException("Image Url must not be null or blank");
         }
     }
 }
