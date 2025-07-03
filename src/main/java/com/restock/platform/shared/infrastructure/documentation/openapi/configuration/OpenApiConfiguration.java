@@ -14,13 +14,6 @@ import org.springframework.context.annotation.Configuration;
 
 @Configuration
 public class OpenApiConfiguration {
-    @Bean
-    public OpenAPI restockPlatformOpenApi() {
-        return new OpenAPI()
-                .addServersItem(new Server().url("http://localhost:8080"));
-    }
-}
-
     @Value("${spring.application.name}")
     String applicationName;
 
@@ -31,7 +24,7 @@ public class OpenApiConfiguration {
     String applicationVersion;
 
     @Bean
-    public OpenAPI learningPlatformOpenApi() {
+    public OpenAPI restockPlatformOpenApi() {
         // General configuration for OpenAPI
         var openApi = new OpenAPI();
         openApi.info(new Info()
