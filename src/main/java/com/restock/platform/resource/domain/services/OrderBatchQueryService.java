@@ -17,4 +17,5 @@ public interface OrderBatchQueryService {
      * @return list of OrderBatch entries related to the order
      */
     List<OrderBatch> handle(GetAllBatchesByOrderId query);
+
 }
