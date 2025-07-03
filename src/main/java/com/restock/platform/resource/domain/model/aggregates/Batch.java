@@ -21,8 +21,8 @@ public class Batch extends AuditableAbstractAggregateRoot<Batch> {
 
     @Getter
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
-    @JoinColumn(name = "supply_id")
-    private Supply supply;
+    @JoinColumn(name = "custom_supply_id")
+    private CustomSupply customSupply;
 
     @Getter
     @Column(columnDefinition = "FLOAT")
@@ -41,13 +41,13 @@ public class Batch extends AuditableAbstractAggregateRoot<Batch> {
      * Constructs a Batch with all its required data.
      *
      * @param userId The ID of the user who created the batch.
-     * @param supply The supply entity this batch is associated with.
+     * @param customSupply The supply entity this batch is associated with.
      * @param stock The amount of stock in the batch.
      * @param expirationDate The expiration date of the batch.
      */
-    public Batch(Long userId, Supply supply,  Double stock, LocalDate expirationDate) {
+    public Batch(Long userId, CustomSupply customSupply, Double stock, LocalDate expirationDate) {
         this.userId = userId;
-        this.supply = supply;
+        this.customSupply = customSupply;
         this.stock = stock;
         this.expirationDate = expirationDate;
     }
@@ -56,10 +56,10 @@ public class Batch extends AuditableAbstractAggregateRoot<Batch> {
      * Constructs a Batch from a CreateBatchCommand.
      *
      * @param command The command containing batch creation data.
-     * @param supply The supply associated with this batch.
+     * @param customSupply The supply associated with this batch.
      */
-    public Batch(CreateBatchCommand command, Supply supply) {
-        this(command.userId(), supply, command.stock(), command.expirationDate());
+    public Batch(CreateBatchCommand command, CustomSupply customSupply) {
+        this(command.userId(), customSupply, command.stock(), command.expirationDate());
     }
     public Batch update(Double newStock, LocalDate newExpirationDate) {
         if (newStock != null) this.stock = newStock;

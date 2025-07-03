@@ -1,12 +1,15 @@
 package com.restock.platform.resource.infrastructure.persistence.jpa.repositories;
 
-import com.restock.platform.resource.domain.model.aggregates.Supply;
+import com.restock.platform.resource.domain.model.entities.Supply;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface SupplyRepository extends JpaRepository<Supply, Long> {
-    List<Supply> findAllByUserId(Long userId);
+
+    Optional<Supply> findByName(String name);
+    boolean existsByName(String name);
+
 }

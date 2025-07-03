@@ -13,7 +13,7 @@ workspace "Restock Web - Open" "Inventory management system for restaurant admin
     
                 dashboardModule = component "Dashboard Module" "Landing screen with KPIs, stock alerts and recent activity." "Angular + ngx-charts"
             inventoryModule = component "Inventory Module" "CRUD for inventory items, stock levels and alerts." "Angular"
-            purchasesModule = component "Purchases Module" "Register new supply purchases, view history and filter." "Angular"
+            purchasesModule = component "Purchases Module" "Register new customSupply purchases, view history and filter." "Angular"
             ordersModule = component "Orders Module" "Track orders, change statuses and view order details." "Angular"
             productsModule = component "Products Module" "Manage products in the menu/catalog." "Angular"
             recipesModule = component "Recipes Module" "Manage ingredient relationships and consumption logic." "Angular"
@@ -51,7 +51,7 @@ workspace "Restock Web - Open" "Inventory management system for restaurant admin
                 orderSvc -> database "Reads and writes order data" "JDBC"
     
                 recipe -> inventory "Updates stock on recipe consumption"
-                purchase -> inventory "Updates stock on supply purchase"
+                purchase -> inventory "Updates stock on customSupply purchase"
                 orderSvc -> productCatalog "Reads product details for orders"
                 orderSvc -> supplierAnalytics "Publishes order events"
                 }
@@ -61,7 +61,7 @@ workspace "Restock Web - Open" "Inventory management system for restaurant admin
             supplier -> landingPage "Visits restock.com" "HTTPS"
             
             admin -> frontendApp "Uses to manage and track inventory"
-            supplier -> frontendApp "Uses to supply and manage stock availability"
+            supplier -> frontendApp "Uses to customSupply and manage stock availability"
 
             landingPage -> frontendApp "Delivers to the web browser"
             frontendApp -> identity "Authenticates and manages profile" "JSON/HTTPS"

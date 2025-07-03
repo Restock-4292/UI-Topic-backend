@@ -8,6 +8,6 @@ import java.util.List;
 
 @Repository
 public interface BatchRepository extends JpaRepository<Batch, Long> {
-    List<Batch> findAllBySupplyId(Long supplyId);
+    List<Batch> findAllByCustomSupplyId(Long supplyId);
     List<Batch> findAllByUserId(Long userId);
 }

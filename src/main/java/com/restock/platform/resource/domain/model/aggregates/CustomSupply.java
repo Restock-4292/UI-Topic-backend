@@ -1,5 +1,6 @@
 package com.restock.platform.resource.domain.model.aggregates;
 
+import com.restock.platform.resource.domain.model.commands.CreateCustomSupplyCommand;
 import com.restock.platform.resource.domain.model.valueobjects.StockRange;
 import com.restock.platform.resource.domain.model.valueobjects.Price;
 import com.restock.platform.shared.domain.model.aggregates.AuditableAbstractAggregateRoot;
@@ -7,10 +8,13 @@ import jakarta.persistence.*;
 import lombok.Getter;
 
 @Entity
-public class Supply extends AuditableAbstractAggregateRoot<Supply> {
+public class CustomSupply extends AuditableAbstractAggregateRoot<CustomSupply> {
 
     @Getter
-    private Long referenceSupplyId;
+    private Long userId;
+
+    @Getter
+    private Long supplyId;
 
     @Getter
     @Embedded
@@ -20,7 +24,6 @@ public class Supply extends AuditableAbstractAggregateRoot<Supply> {
     })
     private StockRange stockRange;
 
-
     @Getter
     @Embedded
     @AttributeOverrides({
@@ -29,26 +32,22 @@ public class Supply extends AuditableAbstractAggregateRoot<Supply> {
     })
     private Price price;
 
-
     @Getter
     private String description;
 
-    @Getter
-    private Long userId;
-
-    protected Supply() {
+    protected CustomSupply() {
         // Para JPA
     }
 
-    public Supply(Long referenceSupplyId, StockRange stockRange, Price price, String description, Long userId) {
-        this.referenceSupplyId = referenceSupplyId;
-        this.stockRange = stockRange;
-        this.price = price;
-        this.description = description;
-        this.userId = userId;
+    public CustomSupply(CreateCustomSupplyCommand command) {
+        this.supplyId = command.supplyId();
+        this.stockRange = command.stockRange();
+        this.price = command.price();
+        this.description = command.description();
+        this.userId = command.userId();
     }
 
-    public Supply update(StockRange stockRange, Price price, String description) {
+    public CustomSupply update(StockRange stockRange, Price price, String description) {
         this.stockRange = stockRange;
         this.price = price;
         this.description = description;

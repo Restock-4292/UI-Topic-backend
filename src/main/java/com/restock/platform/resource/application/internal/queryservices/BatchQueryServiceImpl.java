@@ -30,7 +30,7 @@ public class BatchQueryServiceImpl implements BatchQueryService {
 
     @Override
     public List<Batch> handle(GetBatchesBySupplyIdQuery query) {
-        return batchRepository.findAllBySupplyId(query.supplyId());
+        return batchRepository.findAllByCustomSupplyId(query.supplyId());
     }
 
     @Override

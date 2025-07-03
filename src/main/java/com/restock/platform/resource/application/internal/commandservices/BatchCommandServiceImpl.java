@@ -4,7 +4,7 @@ import com.restock.platform.resource.domain.model.aggregates.Batch;
 import com.restock.platform.resource.domain.model.commands.*;
 import com.restock.platform.resource.domain.services.BatchCommandService;
 import com.restock.platform.resource.infrastructure.persistence.jpa.repositories.BatchRepository;
-import com.restock.platform.resource.infrastructure.persistence.jpa.repositories.SupplyRepository;
+import com.restock.platform.resource.infrastructure.persistence.jpa.repositories.CustomSupplyRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
@@ -13,18 +13,18 @@ import java.util.Optional;
 public class BatchCommandServiceImpl implements BatchCommandService {
 
     private final BatchRepository batchRepository;
-    private final SupplyRepository supplyRepository;
+    private final CustomSupplyRepository customSupplyRepository;
 
-    public BatchCommandServiceImpl(BatchRepository batchRepository, SupplyRepository supplyRepository) {
+    public BatchCommandServiceImpl(BatchRepository batchRepository, CustomSupplyRepository customSupplyRepository) {
         this.batchRepository = batchRepository;
-        this.supplyRepository = supplyRepository;
+        this.customSupplyRepository = customSupplyRepository;
     }
 
     @Override
     public Long handle(CreateBatchCommand command) {
-        verifySupplyExists(command.supplyId());
-        var supply = supplyRepository.findById(command.supplyId())
-                .orElseThrow(() -> new IllegalArgumentException("Supply not found with id: " + command.supplyId()));
+        verifySupplyExists(command.customSupplyId());
+        var supply = customSupplyRepository.findById(command.customSupplyId())
+                .orElseThrow(() -> new IllegalArgumentException("Supply not found with id: " + command.customSupplyId()));
 
         var batch = new Batch(command, supply);
         try {
@@ -66,7 +66,7 @@ public class BatchCommandServiceImpl implements BatchCommandService {
     }
 
     private void verifySupplyExists(Long id) {
-        if (!supplyRepository.existsById(id)) {
+        if (!customSupplyRepository.existsById(id)) {
             throw new IllegalArgumentException("Supply not found with id: " + id);
         }
     }
