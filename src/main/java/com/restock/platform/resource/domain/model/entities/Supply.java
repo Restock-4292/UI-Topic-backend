@@ -3,6 +3,7 @@ package com.restock.platform.resource.domain.model.entities;
 import com.restock.platform.resource.domain.model.valueobjects.UnitMeasurement;
 import com.restock.platform.shared.domain.model.entities.AuditableModel;
 import jakarta.persistence.Embedded;
+import jakarta.persistence.Entity;
 import lombok.Getter;
 
 /*
@@ -13,19 +14,16 @@ import lombok.Getter;
         "unitAbbreviation": "u",
         "category": "Carnes"
  */
-
+@Entity
 public class Supply extends AuditableModel {
 
     @Getter
-    @Embedded
     private String name;
 
     @Getter
-    @Embedded
     private String description;
 
     @Getter
-    @Embedded
     private Boolean perishable;
 
     @Getter
@@ -37,5 +35,13 @@ public class Supply extends AuditableModel {
 
     protected Supply() {
         // Para JPA
+    }
+
+    public Supply(String name, String description, Boolean perishable, UnitMeasurement unitMeasurement, String category) {
+        this.name = name;
+        this.description = description;
+        this.perishable = perishable;
+        this.unitMeasurement = unitMeasurement;
+        this.category = category;
     }
 }
