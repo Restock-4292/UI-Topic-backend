@@ -2,6 +2,7 @@ package com.restock.platform.planning.application.internal.commandservices;
 
 import com.restock.platform.planning.domain.model.aggregates.Recipe;
 import com.restock.platform.planning.domain.model.commands.*;
+import com.restock.platform.planning.domain.model.entities.RecipeSupply;
 import com.restock.platform.planning.domain.model.valueobjects.*;
 import com.restock.platform.planning.domain.services.RecipeCommandService;
 import com.restock.platform.planning.infrastructure.persistence.jpa.repositories.RecipeRepository;

@@ -24,7 +24,7 @@ public class Recipe extends AuditableAbstractAggregateRoot<Recipe> {
     @Column(name = "user_id")
     private Integer userId;
 
-    @Transient
+    @OneToMany(mappedBy = "recipe", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private List<RecipeSupply> supplies = new ArrayList<>();
 
     protected Recipe() {}
@@ -50,8 +50,10 @@ public class Recipe extends AuditableAbstractAggregateRoot<Recipe> {
             throw new IllegalArgumentException("Supply already exists in recipe");
         }
 
-        supplies.add(new RecipeSupply(recipeId, supplyId, quantity));
+        var supply = new RecipeSupply(this, recipeId, supplyId, quantity);
+        supplies.add(supply);
     }
+
 
     public Recipe update(String name, String description, RecipeImageURL imageUrl, RecipePrice totalPrice) {
         if (name != null && !name.isBlank()) this.name = name;

@@ -26,7 +26,8 @@ public class RecipeSupply {
 
     protected RecipeSupply() {}
 
-    public RecipeSupply(RecipeId recipeId, CatalogSupplyId supplyId, RecipeSupplyQuantity quantity) {
+    public RecipeSupply(Recipe recipe, RecipeId recipeId, CatalogSupplyId supplyId, RecipeSupplyQuantity quantity) {
+        this.recipe = recipe;
         this.id = new RecipeSupplyId(recipeId, supplyId);
         this.supplyQuantity = quantity;
     }
