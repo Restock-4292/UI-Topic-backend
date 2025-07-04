@@ -4,15 +4,15 @@ import java.time.LocalDate;
 
 public record CreateBatchCommand(
         Long userId,
-        Long supplyId,
+        Long customSupplyId,
         double stock,
         LocalDate expirationDate
 ) {
     public CreateBatchCommand {
         if (userId == null || userId <= 0)
             throw new IllegalArgumentException("User ID must be a positive number");
-        if (supplyId == null || supplyId <= 0)
-            throw new IllegalArgumentException("Supply ID must be a positive number");
+        if (customSupplyId == null || customSupplyId <= 0)
+            throw new IllegalArgumentException("Custom Supply ID must be a positive number");
         if (stock < 0)
             throw new IllegalArgumentException("Stock cannot be negative");
         if (expirationDate == null)

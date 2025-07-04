@@ -1,20 +1,18 @@
 package com.restock.platform.resource.interfaces.rest.transform;
 
 import com.restock.platform.resource.domain.model.commands.CreateSupplyCommand;
-import com.restock.platform.resource.domain.model.valueobjects.StockRange;
-import com.restock.platform.resource.domain.model.valueobjects.Price;
-import com.restock.platform.resource.interfaces.rest.resources.CreateSupplyResource;
-
-import java.util.Currency;
+import com.restock.platform.resource.domain.model.valueobjects.UnitMeasurement;
+import com.restock.platform.resource.interfaces.rest.resources.SupplyResource;
 
 public class CreateSupplyCommandFromResourceAssembler {
-    public static CreateSupplyCommand toCommandFromResource(CreateSupplyResource resource) {
+
+    public static CreateSupplyCommand toCommandFromResource(SupplyResource resource) {
         return new CreateSupplyCommand(
-                resource.referenceSupplyId(),
-                new StockRange(resource.minStock(), resource.maxStock()),
-                new Price(resource.price(), Currency.getInstance("USD")),  // ← Usamos USD por defecto
+                resource.name(),
                 resource.description(),
-                resource.userId()
+                resource.perishable(),
+                new UnitMeasurement(resource.unitName(), resource.unitAbbreviation()),
+                resource.category()
         );
     }
 }
