@@ -23,7 +23,7 @@ public class RecipeResourceFromEntityAssembler {
                 recipe.getName(),
                 recipe.getDescription(),
                 recipe.getImageUrl().imageUrl(),
-                recipe.getTotalPrice().price(),
+                recipe.getPrice().price(),
                 recipe.getUserId(),
                 supplies
         );
