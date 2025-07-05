@@ -1,14 +1,19 @@
 package com.restock.platform.resource.application.internal.commandservices;
 
-import com.restock.platform.resource.domain.model.aggregates.Supply;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.restock.platform.resource.domain.model.commands.SeedSuppliesCommand;
 import com.restock.platform.resource.domain.model.commands.CreateSupplyCommand;
-import com.restock.platform.resource.domain.model.commands.DeleteSupplyCommand;
-import com.restock.platform.resource.domain.model.commands.UpdateSupplyCommand;
+import com.restock.platform.resource.domain.model.entities.Supply;
 import com.restock.platform.resource.domain.services.SupplyCommandService;
 import com.restock.platform.resource.infrastructure.persistence.jpa.repositories.SupplyRepository;
+import com.restock.platform.resource.interfaces.rest.resources.SupplyResource;
+import com.restock.platform.resource.interfaces.rest.transform.CreateSupplyCommandFromResourceAssembler;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Service;
 
-import java.util.Optional;
+import java.io.InputStream;
+import java.util.List;
 
 @Service
 public class SupplyCommandServiceImpl implements SupplyCommandService {
@@ -20,52 +25,31 @@ public class SupplyCommandServiceImpl implements SupplyCommandService {
     }
 
     @Override
-    public Long handle(CreateSupplyCommand command) {
-        var supply = createSupplyFromCommand(command);
-
+    public void handle(SeedSuppliesCommand command) {
         try {
-            supplyRepository.save(supply);
+            ObjectMapper mapper = new ObjectMapper();
+            InputStream inputStream = new ClassPathResource("jsonData/supplies.json").getInputStream();
+
+            List<SupplyResource> supplyResources = mapper.readValue(inputStream, new TypeReference<>() {});
+
+            for (SupplyResource resource : supplyResources) {
+                if (!supplyRepository.existsByName(resource.name())) {
+                    CreateSupplyCommand cmd = CreateSupplyCommandFromResourceAssembler.toCommandFromResource(resource);
+
+                    Supply supply = new Supply(
+                            cmd.name(),
+                            cmd.description(),
+                            cmd.perishable(),
+                            cmd.unitMeasurement(),
+                            cmd.category()
+                    );
+
+                    supplyRepository.save(supply);
+                }
+            }
+
         } catch (Exception e) {
-            throw new RuntimeException("Error saving supply: " + e.getMessage(), e);
+            throw new RuntimeException("Error loading supplies.json", e);
         }
-
-        return supply.getId();
-    }
-
-    @Override
-    public Optional<Supply> handle(UpdateSupplyCommand command) {
-        var supply = supplyRepository.findById(command.supplyId())
-                .orElseThrow(() -> new IllegalArgumentException("Supply not found with id: " + command.supplyId()));
-
-        try {
-            var updatedSupply = supply.update(command.stockRange(), command.price(), command.description());
-            supplyRepository.save(updatedSupply);
-            return Optional.of(updatedSupply);
-        } catch (Exception e) {
-            throw new RuntimeException("Error updating supply: " + e.getMessage(), e);
-        }
-    }
-
-    @Override
-    public void handle(DeleteSupplyCommand command) {
-        if (!supplyRepository.existsById(command.supplyId())) {
-            throw new IllegalArgumentException("Supply not found with id: " + command.supplyId());
-        }
-
-        try {
-            supplyRepository.deleteById(command.supplyId());
-        } catch (Exception e) {
-            throw new RuntimeException("Error deleting supply: " + e.getMessage(), e);
-        }
-    }
-
-    private Supply createSupplyFromCommand(CreateSupplyCommand command) {
-        return new Supply(
-                command.referenceSupplyId(),
-                command.stockRange(),
-                command.price(),
-                command.description(),
-                command.userId()
-        );
     }
 }

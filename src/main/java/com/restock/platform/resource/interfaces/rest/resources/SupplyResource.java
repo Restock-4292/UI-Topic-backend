@@ -1,12 +1,13 @@
 package com.restock.platform.resource.interfaces.rest.resources;
 
+import java.io.Serializable;
+
 public record SupplyResource(
         Long id,
-        Long referenceSupplyId,
+        String name,
         String description,
-        int minStock,
-        int maxStock,
-        double price,
-        String currencyCode,
-        Long userId
-) {}
+        boolean perishable,
+        String unitName,
+        String unitAbbreviation,
+        String category
+) implements Serializable {}
