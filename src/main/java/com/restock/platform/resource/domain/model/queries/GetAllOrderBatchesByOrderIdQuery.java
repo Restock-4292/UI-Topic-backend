@@ -1,0 +1,3 @@
+package com.restock.platform.resource.domain.model.queries;
+
+public record GetAllOrderBatchesByOrderIdQuery(Long orderId) {}

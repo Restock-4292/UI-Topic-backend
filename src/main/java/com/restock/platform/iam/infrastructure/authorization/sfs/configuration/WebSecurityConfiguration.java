@@ -100,6 +100,25 @@ public class WebSecurityConfiguration {
         }));
         http.csrf(csrfConfigurer -> csrfConfigurer.disable())
                 .exceptionHandling(exceptionHandling -> exceptionHandling.authenticationEntryPoint(unauthorizedRequestHandler))
+                .sessionManagement(customizer -> customizer.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .authorizeHttpRequests(auth -> auth.anyRequest().permitAll());
+
+        // http.addFilterBefore(authorizationRequestFilter(), UsernamePasswordAuthenticationFilter.class); // Desactivado para pruebas
+        return http.build();
+    }
+
+    /*
+    @Bean
+    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+        http.cors(configurer -> configurer.configurationSource(_ -> {
+            var cors = new CorsConfiguration();
+            cors.setAllowedOrigins(List.of("*"));
+            cors.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE"));
+            cors.setAllowedHeaders(List.of("*"));
+            return cors;
+        }));
+        http.csrf(csrfConfigurer -> csrfConfigurer.disable())
+                .exceptionHandling(exceptionHandling -> exceptionHandling.authenticationEntryPoint(unauthorizedRequestHandler))
                 .sessionManagement( customizer -> customizer.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(authorizeRequests -> authorizeRequests
                         .requestMatchers(
@@ -115,7 +134,7 @@ public class WebSecurityConfiguration {
         return http.build();
 
     }
-
+    /*
     /**
      * This is the constructor of the class.
      * @param userDetailsService The user details service
