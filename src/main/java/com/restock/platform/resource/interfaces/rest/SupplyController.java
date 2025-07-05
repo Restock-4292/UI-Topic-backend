@@ -6,11 +6,15 @@ import com.restock.platform.resource.domain.model.queries.GetSupplyByIdQuery;
 import com.restock.platform.resource.domain.model.queries.GetSuppliesByUserIdQuery;
 import com.restock.platform.resource.domain.services.CustomSupplyCommandService;
 import com.restock.platform.resource.domain.services.CustomSupplyQueryService;
+import com.restock.platform.resource.domain.services.SupplyCommandService;
+import com.restock.platform.resource.domain.services.SupplyQueryService;
 import com.restock.platform.resource.interfaces.rest.resources.CreateCustomSupplyResource;
 import com.restock.platform.resource.interfaces.rest.resources.CustomSupplyResource;
+import com.restock.platform.resource.interfaces.rest.resources.SupplyResource;
 import com.restock.platform.resource.interfaces.rest.resources.UpdateSupplyResource;
 import com.restock.platform.resource.interfaces.rest.transform.CreateCustomSupplyCommandFromResourceAssembler;
 import com.restock.platform.resource.interfaces.rest.transform.CustomSupplyResourceFromEntityAssembler;
+import com.restock.platform.resource.interfaces.rest.transform.SupplyResourceFromEntityAssembler;
 import com.restock.platform.resource.interfaces.rest.transform.UpdateSupplyCommandFromResourceAssembler;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -37,6 +41,8 @@ public class SupplyController {
 
     private final CustomSupplyCommandService customSupplyCommandService;
     private final CustomSupplyQueryService customSupplyQueryService;
+    private final SupplyCommandService supplyCommandService;
+    private final SupplyQueryService supplyQueryService;
 
     /**
      * Constructor
@@ -44,9 +50,14 @@ public class SupplyController {
      * @param customSupplyCommandService The {@link CustomSupplyCommandService} instance
      * @param customSupplyQueryService   The {@link CustomSupplyQueryService} instance
      */
-    public SupplyController(CustomSupplyCommandService customSupplyCommandService, CustomSupplyQueryService customSupplyQueryService) {
+    public SupplyController(CustomSupplyCommandService customSupplyCommandService,
+                            CustomSupplyQueryService customSupplyQueryService,
+                            SupplyCommandService supplyCommandService,
+                            SupplyQueryService supplyQueryService) {
         this.customSupplyCommandService = customSupplyCommandService;
         this.customSupplyQueryService = customSupplyQueryService;
+        this.supplyCommandService = supplyCommandService;
+        this.supplyQueryService = supplyQueryService;
     }
 
     /**
@@ -73,6 +84,8 @@ public class SupplyController {
         return new ResponseEntity<>(supplyResource, HttpStatus.CREATED);
     }
 
+
+
     /**
      * Get all supplies
      *
@@ -89,6 +102,46 @@ public class SupplyController {
                 .map(CustomSupplyResourceFromEntityAssembler::toResourceFromEntity)
                 .toList();
         return ResponseEntity.ok(resources);
+    }
+
+    /**
+     * Get all platform supplies
+     *
+     * @return The list of {@link SupplyResource} resources for all platform supplies
+     */
+    @GetMapping("/platform")
+    @Operation(summary = "Get all platform supplies", description = "Retrieve all official supplies from the catalog")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Supplies found"),
+            @ApiResponse(responseCode = "404", description = "No supplies found")
+    })
+    public ResponseEntity<List<SupplyResource>> getAllPlatformSupplies() {
+        var supplies = supplyQueryService.handle(new GetAllSuppliesQuery());
+        if (supplies.isEmpty()) return ResponseEntity.notFound().build();
+        var resources = supplies.stream()
+                .map(SupplyResourceFromEntityAssembler::toResourceFromEntity)
+                .toList();
+        return ResponseEntity.ok(resources);
+    }
+
+    /**
+     * Get platform supply by ID
+     *
+     * @param supplyId The ID of the supply
+     * @return The {@link SupplyResource} resource for the supply
+     */
+    @GetMapping("/platform/{supplyId}")
+    @Operation(summary = "Get platform supply by ID", description = "Retrieve a supply from the official catalog by ID")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Supply found"),
+            @ApiResponse(responseCode = "404", description = "Supply not found")
+    })
+    public ResponseEntity<SupplyResource> getPlatformSupplyById(@PathVariable Long supplyId) {
+        var query = new GetSupplyByIdQuery(supplyId);
+        var result = supplyQueryService.handle(query);
+        if (result.isEmpty()) return ResponseEntity.notFound().build();
+        var resource = SupplyResourceFromEntityAssembler.toResourceFromEntity(result.get());
+        return ResponseEntity.ok(resource);
     }
 
     /**
