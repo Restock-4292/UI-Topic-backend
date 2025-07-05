@@ -84,13 +84,13 @@ public class SupplyController {
         return new ResponseEntity<>(supplyResource, HttpStatus.CREATED);
     }
 
+/*
 
 
-    /**
      * Get all supplies
      *
      * @return A list of {@link CustomSupplyResource}
-     */
+
     @GetMapping
     @Operation(summary = "Get all supplies", description = "Retrieve all available supplies")
     @ApiResponses(value = {
@@ -103,13 +103,13 @@ public class SupplyController {
                 .toList();
         return ResponseEntity.ok(resources);
     }
-
+*/
     /**
      * Get all platform supplies
      *
      * @return The list of {@link SupplyResource} resources for all platform supplies
      */
-    @GetMapping("/platform")
+    @GetMapping("/")
     @Operation(summary = "Get all platform supplies", description = "Retrieve all official supplies from the catalog")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Supplies found"),
