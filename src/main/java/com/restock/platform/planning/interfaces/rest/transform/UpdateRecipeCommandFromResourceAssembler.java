@@ -10,7 +10,7 @@ public class UpdateRecipeCommandFromResourceAssembler {
                 resource.name(),
                 resource.description(),
                 resource.imageUrl(),
-                resource.totalPrice()
+                resource.price()
         );
     }
 }

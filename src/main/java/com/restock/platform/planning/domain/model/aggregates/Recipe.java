@@ -19,7 +19,7 @@ public class Recipe extends AuditableAbstractAggregateRoot<Recipe> {
     @Embedded
     private RecipeImageURL imageUrl;
     @Embedded
-    private RecipePrice totalPrice;
+    private RecipePrice price;
 
     @Column(name = "user_id")
     private Integer userId;
@@ -29,11 +29,11 @@ public class Recipe extends AuditableAbstractAggregateRoot<Recipe> {
 
     protected Recipe() {}
 
-    public Recipe(String name, String description, RecipeImageURL imageUrl, RecipePrice totalPrice, Integer userId) {
+    public Recipe(String name, String description, RecipeImageURL imageUrl, RecipePrice price, Integer userId) {
         this.name = name;
         this.description = description;
         this.imageUrl = imageUrl;
-        this.totalPrice = totalPrice;
+        this.price = price;
         this.userId = userId;
     }
 
@@ -55,11 +55,11 @@ public class Recipe extends AuditableAbstractAggregateRoot<Recipe> {
     }
 
 
-    public Recipe update(String name, String description, RecipeImageURL imageUrl, RecipePrice totalPrice) {
+    public Recipe update(String name, String description, RecipeImageURL imageUrl, RecipePrice price) {
         if (name != null && !name.isBlank()) this.name = name;
         if (description != null && !description.isBlank()) this.description = description;
         if (imageUrl != null) this.imageUrl = imageUrl;
-        if (totalPrice != null) this.totalPrice = totalPrice;
+        if (price != null) this.price = price;
         return this;
     }
 
