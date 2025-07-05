@@ -12,7 +12,7 @@ public class CorsConfigProd implements WebMvcConfigurer {
     @Override
     public void addCorsMappings(CorsRegistry registry) {
         registry.addMapping("/api/v1/**")
-                .allowedOrigins("https://app.restock.com") // Replace with our production frontend URL
+                .allowedOrigins("*") // Replace with our production frontend URL
                 .allowedMethods("GET", "POST", "PUT", "DELETE")
                 .allowedHeaders("*")
                 .allowCredentials(true);
