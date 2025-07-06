@@ -18,9 +18,9 @@ import java.util.Set;
  *
  * @see AuditableAbstractAggregateRoot
  */
+@Entity
 @Getter
 @Setter
-@Entity
 public class User extends AuditableAbstractAggregateRoot<User> {
 
     @NotBlank
@@ -32,45 +32,21 @@ public class User extends AuditableAbstractAggregateRoot<User> {
     @Size(max = 120)
     private String password;
 
-    @ManyToMany(fetch = FetchType.EAGER, cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
-    @JoinTable(	name = "user_roles",
-            joinColumns = @JoinColumn(name = "user_id"),
-            inverseJoinColumns = @JoinColumn(name = "role_id"))
-    private Set<Role> roles;
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "role_id")
+    private Role role;
 
     public User() {
-        this.roles = new HashSet<>();
+        this.role = Role.getDefaultRole();
     }
-    public User(String username, String password) {
+
+    public User(String username, String password, Role role) {
         this.username = username;
         this.password = password;
-        this.roles = new HashSet<>();
+        this.role = role != null ? role : Role.getDefaultRole();
     }
 
-    public User(String username, String password, List<Role> roles) {
-        this(username, password);
-        addRoles(roles);
+    public String getRoleName() {
+        return role != null ? role.getStringName() : null;
     }
-
-    /**
-     * Add a role to the user
-     * @param role the role to add
-     * @return the user with the added role
-     */
-    public User addRole(Role role) {
-        this.roles.add(role);
-        return this;
-    }
-
-    /**
-     * Add a list of roles to the user
-     * @param roles the list of roles to add
-     * @return the user with the added roles
-     */
-    public User addRoles(List<Role> roles) {
-        var validatedRoleSet = Role.validateRoleSet(roles);
-        this.roles.addAll(validatedRoleSet);
-        return this;
-    }
-
 }
