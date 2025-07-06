@@ -8,7 +8,7 @@ public class UpdateBatchCommandFromResourceAssembler {
         return new UpdateBatchCommand(
                 id,
                 resource.userId(),
-                resource.supplyId(),
+                resource.customSupplyId(),
                 resource.stock(),
                 resource.expirationDate()
         );

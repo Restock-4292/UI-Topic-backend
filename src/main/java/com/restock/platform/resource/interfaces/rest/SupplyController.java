@@ -1,26 +1,15 @@
 package com.restock.platform.resource.interfaces.rest;
 
-import com.restock.platform.resource.domain.model.commands.DeleteCustomSupplyCommand;
 import com.restock.platform.resource.domain.model.queries.GetAllSuppliesQuery;
+import com.restock.platform.resource.domain.model.queries.GetAllSupplyCategoriesQuery;
 import com.restock.platform.resource.domain.model.queries.GetSupplyByIdQuery;
-import com.restock.platform.resource.domain.model.queries.GetSuppliesByUserIdQuery;
-import com.restock.platform.resource.domain.services.CustomSupplyCommandService;
-import com.restock.platform.resource.domain.services.CustomSupplyQueryService;
-import com.restock.platform.resource.domain.services.SupplyCommandService;
 import com.restock.platform.resource.domain.services.SupplyQueryService;
-import com.restock.platform.resource.interfaces.rest.resources.CreateCustomSupplyResource;
-import com.restock.platform.resource.interfaces.rest.resources.CustomSupplyResource;
+import com.restock.platform.resource.interfaces.rest.resources.SupplyCategoryResource;
 import com.restock.platform.resource.interfaces.rest.resources.SupplyResource;
-import com.restock.platform.resource.interfaces.rest.resources.UpdateSupplyResource;
-import com.restock.platform.resource.interfaces.rest.transform.CreateCustomSupplyCommandFromResourceAssembler;
-import com.restock.platform.resource.interfaces.rest.transform.CustomSupplyResourceFromEntityAssembler;
+import com.restock.platform.resource.interfaces.rest.transform.SupplyCategoryResourceFromEntityAssembler;
 import com.restock.platform.resource.interfaces.rest.transform.SupplyResourceFromEntityAssembler;
-import com.restock.platform.resource.interfaces.rest.transform.UpdateSupplyCommandFromResourceAssembler;
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -28,209 +17,46 @@ import java.util.List;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
-/**
- * SupplyController
- * <p>
- *     All supply-related endpoints.
- * </p>
- */
 @RestController
 @RequestMapping(value = "/api/v1/supplies", produces = APPLICATION_JSON_VALUE)
-@Tag(name = "Supplies", description = "Endpoints for managing supplies")
+@Tag(name = "Supplies", description = "Endpoints for viewing official platform supplies")
 public class SupplyController {
 
-    private final CustomSupplyCommandService customSupplyCommandService;
-    private final CustomSupplyQueryService customSupplyQueryService;
-    private final SupplyCommandService supplyCommandService;
     private final SupplyQueryService supplyQueryService;
 
-    /**
-     * Constructor
-     *
-     * @param customSupplyCommandService The {@link CustomSupplyCommandService} instance
-     * @param customSupplyQueryService   The {@link CustomSupplyQueryService} instance
-     */
-    public SupplyController(CustomSupplyCommandService customSupplyCommandService,
-                            CustomSupplyQueryService customSupplyQueryService,
-                            SupplyCommandService supplyCommandService,
-                            SupplyQueryService supplyQueryService) {
-        this.customSupplyCommandService = customSupplyCommandService;
-        this.customSupplyQueryService = customSupplyQueryService;
-        this.supplyCommandService = supplyCommandService;
+    public SupplyController(SupplyQueryService supplyQueryService) {
         this.supplyQueryService = supplyQueryService;
     }
 
-    /**
-     * Create a new supply
-     *
-     * @param resource The {@link CreateCustomSupplyResource} instance
-     * @return The created {@link CustomSupplyResource}
-     */
-    @PostMapping
-    @Operation(summary = "Create a new supply", description = "Create a new supply and return its details")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "201", description = "Supply created successfully"),
-            @ApiResponse(responseCode = "400", description = "Invalid input")
-    })
-    public ResponseEntity<CustomSupplyResource> createSupply(@RequestBody CreateCustomSupplyResource resource) {
-        var createSupplyCommand = CreateCustomSupplyCommandFromResourceAssembler.toCommandFromResource(resource);
-        var supplyId = customSupplyCommandService.handle(createSupplyCommand);
-        if (supplyId == null || supplyId == 0L) return ResponseEntity.badRequest().build();
-        var getSupplyByIdQuery = new GetSupplyByIdQuery(supplyId);
-        var supply = customSupplyQueryService.handle(getSupplyByIdQuery);
-        if (supply.isEmpty()) return ResponseEntity.notFound().build();
-        var supplyEntity = supply.get();
-        var supplyResource = CustomSupplyResourceFromEntityAssembler.toResourceFromEntity(supplyEntity);
-        return new ResponseEntity<>(supplyResource, HttpStatus.CREATED);
-    }
-
-/*
-
-
-     * Get all supplies
-     *
-     * @return A list of {@link CustomSupplyResource}
-
     @GetMapping
-    @Operation(summary = "Get all supplies", description = "Retrieve all available supplies")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Supplies retrieved successfully")
-    })
-    public ResponseEntity<List<CustomSupplyResource>> getAllSupplies() {
-        var supplies = customSupplyQueryService.handle(new GetAllSuppliesQuery());
-        var resources = supplies.stream()
-                .map(CustomSupplyResourceFromEntityAssembler::toResourceFromEntity)
-                .toList();
-        return ResponseEntity.ok(resources);
-    }
-*/
-    /**
-     * Get all platform supplies
-     *
-     * @return The list of {@link SupplyResource} resources for all platform supplies
-     */
-    @GetMapping("/")
-    @Operation(summary = "Get all platform supplies", description = "Retrieve all official supplies from the catalog")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Supplies found"),
-            @ApiResponse(responseCode = "404", description = "No supplies found")
-    })
+    @Operation(summary = "Get all platform supplies")
     public ResponseEntity<List<SupplyResource>> getAllPlatformSupplies() {
         var supplies = supplyQueryService.handle(new GetAllSuppliesQuery());
         if (supplies.isEmpty()) return ResponseEntity.notFound().build();
+
         var resources = supplies.stream()
                 .map(SupplyResourceFromEntityAssembler::toResourceFromEntity)
                 .toList();
         return ResponseEntity.ok(resources);
     }
 
-    /**
-     * Get platform supply by ID
-     *
-     * @param supplyId The ID of the supply
-     * @return The {@link SupplyResource} resource for the supply
-     */
-    @GetMapping("/platform/{supplyId}")
-    @Operation(summary = "Get platform supply by ID", description = "Retrieve a supply from the official catalog by ID")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Supply found"),
-            @ApiResponse(responseCode = "404", description = "Supply not found")
-    })
+    @GetMapping("/{supplyId}")
+    @Operation(summary = "Get platform supply by ID")
     public ResponseEntity<SupplyResource> getPlatformSupplyById(@PathVariable Long supplyId) {
-        var query = new GetSupplyByIdQuery(supplyId);
-        var result = supplyQueryService.handle(query);
+        var result = supplyQueryService.handle(new GetSupplyByIdQuery(supplyId));
         if (result.isEmpty()) return ResponseEntity.notFound().build();
+
         var resource = SupplyResourceFromEntityAssembler.toResourceFromEntity(result.get());
         return ResponseEntity.ok(resource);
     }
 
-    /**
-     * Get supply by ID
-     *
-     * @param id The ID of the supply
-     * @return The {@link CustomSupplyResource} if found
-     */
-    @GetMapping("/{id}")
-    @Operation(summary = "Get supply by ID", description = "Retrieve a supply by its unique ID")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Supply found"),
-            @ApiResponse(responseCode = "404", description = "Supply not found")
-    })
-    public ResponseEntity<CustomSupplyResource> getSupplyById(@PathVariable Long id) {
-        return customSupplyQueryService.handle(new GetSupplyByIdQuery(id))
-                .map(CustomSupplyResourceFromEntityAssembler::toResourceFromEntity)
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
-    }
-    /**
-     * Delete a supply by ID
-     *
-     * @param id The ID of the supply to delete
-     * @return 204 No Content if deleted successfully
-     */
-    @DeleteMapping("/{id}")
-    @Operation(summary = "Delete a supply", description = "Delete a supply by its ID")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "204", description = "Supply deleted successfully"),
-            @ApiResponse(responseCode = "404", description = "Supply not found")
-    })
-    public ResponseEntity<Void> deleteSupplyById(@PathVariable Long id) {
-        try {
-            customSupplyCommandService.handle(new DeleteCustomSupplyCommand(id));
-            return ResponseEntity.noContent().build();
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.notFound().build();
-        } catch (Exception e) {
-            return ResponseEntity.internalServerError().build();
-        }
+    @GetMapping("/categories")
+    @Operation(summary = "Get all supply categories")
+    public ResponseEntity<List<String>> getAllSupplyCategories() {
+        var categories = supplyQueryService.handle(new GetAllSupplyCategoriesQuery());
+        if (categories.isEmpty()) return ResponseEntity.notFound().build();
+
+        return ResponseEntity.ok(categories);
     }
 
-    /**
-     * Get supplies by user ID
-     *
-     * @param userId The ID of the user
-     * @return A list of {@link CustomSupplyResource} belonging to the user
-     */
-    @GetMapping("/user/{userId}")
-    @Operation(summary = "Get supplies by user ID", description = "Retrieve all supplies associated with a given user")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Supplies found for user")
-    })
-    public ResponseEntity<List<CustomSupplyResource>> getSuppliesByUserId(@PathVariable Long userId) {
-        var supplies = customSupplyQueryService.handle(new GetSuppliesByUserIdQuery(userId));
-        var resources = supplies.stream()
-                .map(CustomSupplyResourceFromEntityAssembler::toResourceFromEntity)
-                .toList();
-        return ResponseEntity.ok(resources);
-    }
-
-    /**
-     * Update a supply by ID
-     *
-     * @param id The ID of the supply
-     * @param resource The updated values
-     * @return The updated {@link CustomSupplyResource}
-     */
-    @PutMapping("/{id}")
-    @Operation(summary = "Update a supply", description = "Update an existing supply by its ID")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Supply updated successfully"),
-            @ApiResponse(responseCode = "400", description = "Invalid input"),
-            @ApiResponse(responseCode = "404", description = "Supply not found")
-    })
-    public ResponseEntity<CustomSupplyResource> updateSupply(
-            @PathVariable Long id,
-            @RequestBody UpdateSupplyResource resource) {
-
-        var command = UpdateSupplyCommandFromResourceAssembler.toCommandFromResource(id, resource);
-        var updatedSupply  = customSupplyCommandService.handle(command);
-
-        if (updatedSupply.isEmpty()) return ResponseEntity.notFound().build();
-
-        var result = customSupplyQueryService.handle(new GetSupplyByIdQuery(id));
-        if (result.isEmpty()) return ResponseEntity.notFound().build();
-
-        var resourceResponse = CustomSupplyResourceFromEntityAssembler.toResourceFromEntity(result.get());
-        return ResponseEntity.ok(resourceResponse);
-    }
 }

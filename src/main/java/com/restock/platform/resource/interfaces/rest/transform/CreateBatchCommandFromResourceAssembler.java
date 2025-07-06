@@ -10,7 +10,7 @@ public class CreateBatchCommandFromResourceAssembler {
     public static CreateBatchCommand toCommandFromResource(CreateBatchResource resource) {
         return new CreateBatchCommand(
                 resource.userId(),
-                resource.supplyId(),
+                resource.customSupplyId(),
                 resource.stock(),
                 resource.expirationDate()
         );
