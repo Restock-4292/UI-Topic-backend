@@ -4,7 +4,7 @@ import java.time.LocalDate;
 
 public record UpdateBatchResource(
         Long userId,
-        Long supplyId,
+        Long customSupplyId,
         Double stock,
         LocalDate expirationDate
 ) {}

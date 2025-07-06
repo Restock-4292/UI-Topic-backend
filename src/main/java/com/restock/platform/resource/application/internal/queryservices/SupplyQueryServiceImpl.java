@@ -2,6 +2,7 @@ package com.restock.platform.resource.application.internal.queryservices;
 
 import com.restock.platform.resource.domain.model.entities.Supply;
 import com.restock.platform.resource.domain.model.queries.GetAllSuppliesQuery;
+import com.restock.platform.resource.domain.model.queries.GetAllSupplyCategoriesQuery;
 import com.restock.platform.resource.domain.model.queries.GetSupplyByIdQuery;
 import com.restock.platform.resource.domain.services.SupplyQueryService;
 import com.restock.platform.resource.infrastructure.persistence.jpa.repositories.SupplyRepository;
@@ -24,4 +25,13 @@ public class SupplyQueryServiceImpl implements SupplyQueryService {
     @Override
     public Optional<Supply> handle(GetSupplyByIdQuery query){return supplyRepository.findById(query.supplyId());};
 
+    @Override
+    public List<String> handle(GetAllSupplyCategoriesQuery query) {
+        return supplyRepository.findAll().stream()
+                .map(Supply::getCategory)
+                .filter(category -> category != null && !category.isBlank())
+                .distinct()
+                .sorted()
+                .toList();
+    }
 }

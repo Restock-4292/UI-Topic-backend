@@ -5,7 +5,7 @@ import java.time.LocalDate;
 public record BatchResource(
         Long id,
         Long userId,
-        Long supplyId,
+        Long customSupplyId,
         double stock,
         LocalDate expirationDate
 ) {
