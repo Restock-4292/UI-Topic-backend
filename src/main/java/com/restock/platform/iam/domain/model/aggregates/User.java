@@ -37,13 +37,12 @@ public class User extends AuditableAbstractAggregateRoot<User> {
     private Role role;
 
     public User() {
-        this.role = Role.getDefaultRole();
     }
 
     public User(String username, String password, Role role) {
         this.username = username;
         this.password = password;
-        this.role = role != null ? role : Role.getDefaultRole();
+        this.role = role;
     }
 
     public String getRoleName() {

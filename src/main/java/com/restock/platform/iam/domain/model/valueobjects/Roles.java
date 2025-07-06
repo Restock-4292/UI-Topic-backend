@@ -7,7 +7,6 @@ package com.restock.platform.iam.domain.model.valueobjects;
  * </p>
  */
 public enum Roles {
-    User,
     RestaurantSupplier,
     RestaurantAdministrator
 }
