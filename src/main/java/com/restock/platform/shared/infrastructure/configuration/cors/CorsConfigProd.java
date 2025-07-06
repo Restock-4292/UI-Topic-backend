@@ -11,7 +11,7 @@ public class CorsConfigProd implements WebMvcConfigurer {
 
     @Override
     public void addCorsMappings(CorsRegistry registry) {
-        registry.addMapping("/**")
+        registry.addMapping("/api/v1/**")
                 .allowedOrigins("*") // Replace with our production frontend URL
                 .allowedMethods("GET", "POST", "PUT", "DELETE")
                 .allowedHeaders("*")

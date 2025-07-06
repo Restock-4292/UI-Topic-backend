@@ -11,8 +11,8 @@ import java.util.List;
  * </p>
  * @param username the username of the user
  * @param password the password of the user
- * @param roles the roles of the user
+ * @param roleId the id of role of the user
  *
  */
-public record SignUpCommand(String username, String password, List<Role> roles) {
+public record SignUpCommand(String username, String password,  Long roleId) {
 }

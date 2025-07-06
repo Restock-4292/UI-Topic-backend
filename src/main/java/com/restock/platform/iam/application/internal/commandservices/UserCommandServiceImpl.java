@@ -8,6 +8,7 @@ import com.restock.platform.iam.domain.model.commands.SignUpCommand;
 import com.restock.platform.iam.domain.services.UserCommandService;
 import com.restock.platform.iam.infrastructure.persistence.jpa.repositories.RoleRepository;
 import com.restock.platform.iam.infrastructure.persistence.jpa.repositories.UserRepository;
+import com.restock.platform.shared.domain.exceptions.InvalidCredentialsException;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.springframework.stereotype.Service;
 
@@ -49,9 +50,9 @@ public class UserCommandServiceImpl implements UserCommandService {
     public Optional<ImmutablePair<User, String>> handle(SignInCommand command) {
         var user = userRepository.findByUsername(command.username());
         if (user.isEmpty())
-            throw new RuntimeException("User not found");
+            throw new InvalidCredentialsException("User not found");
         if (!hashingService.matches(command.password(), user.get().getPassword()))
-            throw new RuntimeException("Invalid password");
+            throw new InvalidCredentialsException("Invalid password");
         var token = tokenService.generateToken(user.get().getUsername());
         return Optional.of(ImmutablePair.of(user.get(), token));
     }
@@ -68,9 +69,13 @@ public class UserCommandServiceImpl implements UserCommandService {
     public Optional<User> handle(SignUpCommand command) {
         if (userRepository.existsByUsername(command.username()))
             throw new RuntimeException("Username already exists");
-        var roles = command.roles().stream().map(role -> roleRepository.findByName(role.getName()).orElseThrow(() -> new RuntimeException("Role name not found"))).toList();
-        var user = new User(command.username(), hashingService.encode(command.password()), roles);
+
+        var role = roleRepository.findById(command.roleId())
+                .orElseThrow(() -> new RuntimeException("Role not found"));
+
+        var user = new User(command.username(), hashingService.encode(command.password()), role);
         userRepository.save(user);
+
         return userRepository.findByUsername(command.username());
     }
 }
