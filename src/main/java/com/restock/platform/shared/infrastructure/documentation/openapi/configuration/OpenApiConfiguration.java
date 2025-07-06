@@ -12,6 +12,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+import java.util.List;
+
 @Configuration
 public class OpenApiConfiguration {
     @Value("${spring.application.name}")
@@ -25,8 +27,8 @@ public class OpenApiConfiguration {
 
     @Bean
     public OpenAPI restockPlatformOpenApi() {
-        // General configuration for OpenAPI
         var openApi = new OpenAPI();
+
         openApi.info(new Info()
                         .title(this.applicationName)
                         .description(this.applicationDescription)
@@ -35,24 +37,22 @@ public class OpenApiConfiguration {
                                 .url("https://springdoc.org")))
                 .externalDocs(new ExternalDocumentation()
                         .description("Restock Platform wiki Documentation")
-                        .url("https://restock.platform.github.io/docs"));
-
-        // Add a security scheme
-
-        final String securitySchemeName = "bearerAuth";
-
-        openApi.addSecurityItem(new SecurityRequirement()
-                        .addList(securitySchemeName))
+                        .url("https://restock.platform.github.io/docs"))
+                .addSecurityItem(new SecurityRequirement()
+                        .addList("bearerAuth"))
                 .components(new Components()
-                        .addSecuritySchemes(securitySchemeName,
+                        .addSecuritySchemes("bearerAuth",
                                 new SecurityScheme()
-                                        .name(securitySchemeName)
+                                        .name("bearerAuth")
                                         .type(SecurityScheme.Type.HTTP)
                                         .scheme("bearer")
                                         .bearerFormat("JWT")));
 
-        // Return the OpenAPI configuration object with all the settings
+        openApi.servers(List.of(
+                new Server().url("https://ui-topic-backend-production.up.railway.app")
+        ));
 
         return openApi;
     }
 }
+

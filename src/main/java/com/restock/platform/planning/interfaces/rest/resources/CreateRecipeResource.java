@@ -5,6 +5,6 @@ public record CreateRecipeResource(
         String name,
         String description,
         String imageUrl,
-        Double totalPrice,
+        Double price,
         int userId
 ) {}
