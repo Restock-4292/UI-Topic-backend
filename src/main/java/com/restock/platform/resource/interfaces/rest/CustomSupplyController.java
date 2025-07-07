@@ -1,8 +1,7 @@
 package com.restock.platform.resource.interfaces.rest;
 
 import com.restock.platform.resource.domain.model.commands.DeleteCustomSupplyCommand;
-import com.restock.platform.resource.domain.model.queries.GetSupplyByIdQuery;
-import com.restock.platform.resource.domain.model.queries.GetSuppliesByUserIdQuery;
+import com.restock.platform.resource.domain.model.queries.*;
 import com.restock.platform.resource.domain.services.CustomSupplyCommandService;
 import com.restock.platform.resource.domain.services.CustomSupplyQueryService;
 import com.restock.platform.resource.interfaces.rest.resources.CreateCustomSupplyResource;
@@ -12,8 +11,6 @@ import com.restock.platform.resource.interfaces.rest.transform.CreateCustomSuppl
 import com.restock.platform.resource.interfaces.rest.transform.CustomSupplyResourceFromEntityAssembler;
 import com.restock.platform.resource.interfaces.rest.transform.UpdateSupplyCommandFromResourceAssembler;
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -44,7 +41,7 @@ public class CustomSupplyController {
         var id = customSupplyCommandService.handle(command);
         if (id == null || id == 0L) return ResponseEntity.badRequest().build();
 
-        var result = customSupplyQueryService.handle(new GetSupplyByIdQuery(id));
+        var result = customSupplyQueryService.handle(new GetCustomSupplyByIdQuery(id));
         if (result.isEmpty()) return ResponseEntity.notFound().build();
 
         var resourceResponse = CustomSupplyResourceFromEntityAssembler.toResourceFromEntity(result.get());
@@ -54,7 +51,7 @@ public class CustomSupplyController {
     @GetMapping
     @Operation(summary = "Get all custom supplies")
     public ResponseEntity<List<CustomSupplyResource>> getAllSupplies() {
-        var supplies = customSupplyQueryService.handle(new GetSuppliesByUserIdQuery(null)); // ajustar si es necesario
+        var supplies = customSupplyQueryService.handle(new GetAllCustomSuppliesQuery());
         var resources = supplies.stream()
                 .map(CustomSupplyResourceFromEntityAssembler::toResourceFromEntity)
                 .toList();
@@ -64,7 +61,7 @@ public class CustomSupplyController {
     @GetMapping("/{id}")
     @Operation(summary = "Get custom supply by ID")
     public ResponseEntity<CustomSupplyResource> getSupplyById(@PathVariable Long id) {
-        return customSupplyQueryService.handle(new GetSupplyByIdQuery(id))
+        return customSupplyQueryService.handle(new GetCustomSupplyByIdQuery(id))
                 .map(CustomSupplyResourceFromEntityAssembler::toResourceFromEntity)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
@@ -73,7 +70,7 @@ public class CustomSupplyController {
     @GetMapping("/user/{userId}")
     @Operation(summary = "Get custom supplies by user ID")
     public ResponseEntity<List<CustomSupplyResource>> getSuppliesByUserId(@PathVariable Long userId) {
-        var supplies = customSupplyQueryService.handle(new GetSuppliesByUserIdQuery(userId));
+        var supplies = customSupplyQueryService.handle(new GetCustomSuppliesByUserIdQuery(userId));
         var resources = supplies.stream()
                 .map(CustomSupplyResourceFromEntityAssembler::toResourceFromEntity)
                 .toList();
@@ -87,7 +84,7 @@ public class CustomSupplyController {
         var updated = customSupplyCommandService.handle(command);
         if (updated.isEmpty()) return ResponseEntity.notFound().build();
 
-        var result = customSupplyQueryService.handle(new GetSupplyByIdQuery(id));
+        var result = customSupplyQueryService.handle(new GetCustomSupplyByIdQuery(id));
         if (result.isEmpty()) return ResponseEntity.notFound().build();
 
         var response = CustomSupplyResourceFromEntityAssembler.toResourceFromEntity(result.get());

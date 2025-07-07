@@ -19,17 +19,17 @@ public class CustomSupplyQueryServiceImpl implements CustomSupplyQueryService {
     }
 
     @Override
-    public List<CustomSupply> handle(GetAllSuppliesQuery query) {
+    public List<CustomSupply> handle(GetAllCustomSuppliesQuery query) {
         return customSupplyRepository.findAll();
     }
 
     @Override
-    public Optional<CustomSupply> handle(GetSupplyByIdQuery query) {
-        return customSupplyRepository.findById(query.supplyId());
+    public Optional<CustomSupply> handle(GetCustomSupplyByIdQuery query) {
+        return customSupplyRepository.findById(query.customSupplyId());
     }
 
     @Override
-    public List<CustomSupply> handle(GetSuppliesByUserIdQuery query) {
+    public List<CustomSupply> handle(GetCustomSuppliesByUserIdQuery query) {
         return customSupplyRepository.findAllByUserId(query.userId());
     }
 }
