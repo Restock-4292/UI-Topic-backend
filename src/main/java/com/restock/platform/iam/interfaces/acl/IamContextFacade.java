@@ -1,5 +1,6 @@
 package com.restock.platform.iam.interfaces.acl;
 
+import com.restock.platform.iam.domain.model.aggregates.User;
 import com.restock.platform.iam.domain.model.commands.SignUpCommand;
 import com.restock.platform.iam.domain.model.entities.Role;
 import com.restock.platform.iam.domain.model.queries.GetUserByIdQuery;
@@ -7,9 +8,11 @@ import com.restock.platform.iam.domain.model.queries.GetUserByUsernameQuery;
 import com.restock.platform.iam.domain.services.UserCommandService;
 import com.restock.platform.iam.domain.services.UserQueryService;
 import org.apache.logging.log4j.util.Strings;
+import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * IamContextFacade
@@ -20,6 +23,7 @@ import java.util.List;
  * </p>
  *
  */
+@Component
 public class IamContextFacade {
     private final UserCommandService userCommandService;
     private final UserQueryService userQueryService;
@@ -78,6 +82,16 @@ public class IamContextFacade {
         var result = userQueryService.handle(getUserByIdQuery);
         if (result.isEmpty()) return Strings.EMPTY;
         return result.get().getUsername();
+    }
+
+    /**
+     * Retrieves the User aggregate by its ID.
+     * @param userId The ID of the user.
+     * @return The user, if found.
+     */
+    public Optional<User> getUserById(Long userId) {
+        var query = new GetUserByIdQuery(userId);
+        return userQueryService.handle(query);
     }
 
 }
