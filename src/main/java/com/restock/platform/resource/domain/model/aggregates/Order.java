@@ -70,6 +70,13 @@ public class Order extends AuditableAbstractAggregateRoot<Order> {
      * Constructs an Order from a CreateOrderCommand.
      */
     public Order(CreateOrderCommand command) {
+        if (command.totalPrice() == null) {
+            throw new IllegalArgumentException("totalPrice cannot be null");
+        }
+        if (command.requestedProductsCount() == null) {
+            throw new IllegalArgumentException("requestedProductsCount cannot be null");
+        }
+
         this.adminRestaurantId = command.adminRestaurantId();
         this.supplierId = command.supplierId();
         this.date = command.date();
@@ -79,6 +86,7 @@ public class Order extends AuditableAbstractAggregateRoot<Order> {
         this.state = OrderToSupplierState.ON_HOLD;
         this.situation = OrderToSupplierSituation.PENDING;
     }
+
 
     /**
      * Updates the state and situation of the order.
